@@ -12,7 +12,7 @@ b1 -> A | \\... | D | P | \\... | Z \
 c1->A|B|c1b1d1|D|\\eps \
 d1-> \\| | \\|\\| | \\-> | \\->\\-> \
 brace -> second brace | brace second \
-second -> A | \... | Z
+second -> A | \\... | Z
 
 Пример неправильно написанной грамматики:
 
