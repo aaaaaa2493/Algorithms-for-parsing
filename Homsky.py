@@ -1,6 +1,4 @@
-from pprint import pprint
 import re
-from time import sleep
 
 
 def err(num, string):
@@ -20,14 +18,7 @@ def print_rules(rules):
         print(key, ' -> ', '  |  '.join(' '.join(i) for i in rules[key]))
 
 
-initial = \
-'''
-init E
-E ->  E - T | T
-T -> T * F | F
-F -> (E) | D
-D -> 0 | \... | 9
-'''
+initial = open('grammar.txt').read()
 
 specials = ['\eps', '\...']
 eps, dots = specials
@@ -303,5 +294,3 @@ for key in sorted(rules):
         del rules[key]
 
 print_rules(rules)
-
-#pprint(rules)
