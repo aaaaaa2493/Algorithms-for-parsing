@@ -45,14 +45,16 @@ for rule in all_rules:
         except: err(2, 'no initial nonterminal after "init" statement')
 
     else:
-        rule = ''.join(rule.split())
-        sp = re.split('(?<!\\\\)[-]{1}[>]{1}', rule)
-        if len(sp) > 2: err(3, 'in rule "%s" more than one "->" symbols' % old_rule)
-        if len(sp) < 2: err(4, 'in rule "%s" not found any "->" symbols' % old_rule)
+        #rule = ''.join(rule.split())
+        #sp = re.split('(?<!\\\\)[-]{1}[>]{1}', rule)
+        sp = rule.split('->', 1)
+        if len(sp) < 2: err(3, 'in rule "%s" not found any "->" symbols' % old_rule)
+        sp[0] = sp[0].strip()
+        if len(sp[0].split()) > 1: err(4, 'rule must contain only one nonterminal before "->" - "%s"' % rule)
         formatted_rules += (sp[0], sp[1]),
 
-if not S0: err(5, 'declaration of initial nonterminal using "init" not found')
-if '\\' in S0: err(6, 'initial nonterminal cannot contain special symbol "\\" - "%s"' % S0)
+if not S0: err(4, 'declaration of initial nonterminal using "init" not found')
+if '\\' in S0: err(5, 'initial nonterminal cannot contain special symbol "\\" - "%s"' % S0)
 
 rules = {}
 for nonterm, right_side in formatted_rules:
@@ -202,7 +204,7 @@ while something_changed:
                     rule[:] = [rule[1]]
                     something_changed = True
 
-            elif len(rule) == 1 and rule != [eps] and rule[0] not in terms and rules[rule[0]] == [[eps]]:
+            elif len(rule) == 1 and rule != [eps] and rule[0] in nonterms and rules[rule[0]] == [[eps]]:
                 rule[:] = [eps]
                 something_changed = True
 
@@ -211,15 +213,63 @@ print_rules(rules)
 print()
 print('Delete single epsilon - rules and move single epsilon rule from "%s" to "\S0" if it exists' % S0)
 
-if [eps] in rules[S0]:
-    rules['\S0'] += [eps],
-
-for key in sorted(rules):
-    if key != '\S0':
-        if rules[key] == [[eps]]:
-            del rules[key]
-        else:
-            rules[key][:] = [i for i in rules[key] if i != [eps]]
+something_changed = True
+while something_changed:
+    something_changed = False
+    for key in sorted(rules):
+        if key != '\S0':
+            if rules[key] == [[eps]]: del rules[key]
+            else:
+                if [eps] in rules[key]:
+                    something_changed = True
+                    new_rules = []
+                    for rule in rules[key]:
+                        if rule == [eps]:
+                            for other_key in sorted(rules):
+                                if key != other_key:
+                                    other_new_rules = []
+                                    for other_rule in rules[other_key]:
+                                        if key in other_rule:
+                                            if len(other_rule) == 1:
+                                                other_new_rules += [key],
+                                                if [eps] not in rules[other_key]:
+                                                    other_new_rules += [eps],
+                                            elif len(other_rule) == 2:
+                                                if other_rule[0] == key and other_rule[1] == key:
+                                                    other_new_rules += [key, key],
+                                                    if [key] not in rules[other_key]:
+                                                        other_new_rules += [key],
+                                                    if [eps] not in rules[other_key]:
+                                                        other_new_rules += [eps],
+                                                elif other_rule[0] == key and other_rule[1] != key:
+                                                    other_new_rules += other_rule,
+                                                    if other_rule[1] not in rules[other_key]:
+                                                        other_new_rules += [other_rule[1]],
+                                                elif other_rule[0] != key and other_rule[1] == key:
+                                                    other_new_rules += other_rule,
+                                                    if other_rule[0] not in rules[other_key]:
+                                                        other_new_rules += [other_rule[0]],
+                                        else:
+                                            other_new_rules += other_rule,
+                                    rules[other_key][:] = other_new_rules
+                            break
+                    for rule in rules[key]:
+                        if rule != [eps]:
+                            if key in rule:
+                                if len(rule) == 2:
+                                    if rule[0] == key and rule[1] == key:
+                                        new_rules += [key, key],
+                                    elif rule[0] == key and rule[1] != key:
+                                        new_rules += rule,
+                                        if rule[1] not in rules[key]:
+                                            new_rules += [rule[1]],
+                                    elif rule[0] != key and rule[1] == key:
+                                        new_rules += rule,
+                                        if rule[0] not in rules[key]:
+                                            new_rules += [rule[0]],
+                            else:
+                                new_rules += rule,
+                    rules[key][:] = new_rules
 
 print_rules(rules)
 
@@ -243,6 +293,11 @@ def find_cycles(path, key, rules, nonterms):
     for rule in rules[key]:
         if len(rule) == 1 and rule[0] in nonterms:
             find_cycles(new_path, rule[0], rules, nonterms)
+
+
+for key in sorted(rules):
+    for rule in rules[key]:
+        rules[key][:] = [rule for rule in rules[key] if rule != [key]]
 
 
 for key in sorted(rules):
