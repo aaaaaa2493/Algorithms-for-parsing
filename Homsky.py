@@ -58,7 +58,7 @@ if '\\' in S0: err(6, 'initial nonterminal cannot contain special symbol "\\" - 
 
 rules = {}
 for nonterm, right_side in formatted_rules:
-    right_side = [replace_escaped(i).strip() for i in re.split('(?<!\\\\)[|]{1}', right_side) if i.strip() != '']
+    right_side = [i.strip() for i in re.split('(?<!\\\\)[|]{1}', right_side) if i.strip() != '']
     for i, t in enumerate(right_side):
         old_rules = rules.get(nonterm,[])
         if t not in old_rules:
@@ -81,7 +81,7 @@ for nonterm, right_side in formatted_rules:
                         dotted_symbols = [chr(i) for i in range(ord(right_side[i-1]) + 1, ord(right_side[i+1]))]
                         rules[nonterm] = old_rules + dotted_symbols
             else:
-                rules[nonterm] = old_rules+[t]
+                rules[nonterm] = old_rules+[replace_escaped(t)]
 
 terms = []
 nonterms = rules.keys()
