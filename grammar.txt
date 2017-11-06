@@ -1,5 +1,2 @@
-init E
-E ->  E - T | T
-T -> T * F | F
-F -> (E) | D
-D -> 0 | \... | 9
+init S
+S -> ( S ) S | \eps

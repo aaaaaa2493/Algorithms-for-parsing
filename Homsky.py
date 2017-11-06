@@ -209,13 +209,17 @@ while something_changed:
 print_rules(rules)
 
 print()
-print('Delete single epsilon - rules except in initial nonterminal "%s"' % S0)
+print('Delete single epsilon - rules and move single epsilon rule from "%s" to "\S0" if it exists' % S0)
+
+if [eps] in rules[S0]:
+    rules['\S0'] += [eps],
 
 for key in sorted(rules):
-    if rules[key] == [[eps]]:
-        del rules[key]
-    elif key != S0:
-        rules[key][:] = [i for i in rules[key] if i != [eps]]
+    if key != '\S0':
+        if rules[key] == [[eps]]:
+            del rules[key]
+        else:
+            rules[key][:] = [i for i in rules[key] if i != [eps]]
 
 print_rules(rules)
 
