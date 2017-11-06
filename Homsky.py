@@ -23,7 +23,7 @@ initial = open('grammar.txt').read()
 specials = ['\eps', '\...']
 eps, dots = specials
 
-escaped = ['\->', '\|']
+escaped = ['\|', '\\\\']
 
 
 def replace_escaped(string):
@@ -53,16 +53,16 @@ for rule in all_rules:
         if len(sp[0].split()) > 1: err(4, 'rule must contain only one nonterminal before "->" - "%s"' % rule)
         formatted_rules += (sp[0], sp[1]),
 
-if not S0: err(4, 'declaration of initial nonterminal using "init" not found')
-if '\\' in S0: err(5, 'initial nonterminal cannot contain special symbol "\\" - "%s"' % S0)
+if not S0: err(5, 'declaration of initial nonterminal using "init" not found')
+if '\\' in S0: err(6, 'initial nonterminal cannot contain special symbol "\\" - "%s"' % S0)
 
 rules = {}
 for nonterm, right_side in formatted_rules:
-    right_side = [replace_escaped(i) for i in re.split('(?<!\\\\)[|]{1}', right_side) if i != '']
+    right_side = [replace_escaped(i).strip() for i in re.split('(?<!\\\\)[|]{1}', right_side) if i.strip() != '']
     for i, t in enumerate(right_side):
         old_rules = rules.get(nonterm,[])
         if t not in old_rules:
-            if '\\' in t and t not in specials and sum(t.count(j) for j in escaped) != t.count('\\'):
+            if '\\' in t and t not in specials and sum(t.count(j) for j in escaped) != t.count('\\') - t.count('\\\\'):
                 err(7, 'found illegal escape symbol in "%s"' % t)
             if t == dots:
                 if i == 0:
@@ -86,12 +86,6 @@ for nonterm, right_side in formatted_rules:
 terms = []
 nonterms = rules.keys()
 
-for nt1 in nonterms:
-    for nt2 in nonterms:
-        if nt1 != nt2 and (nt1 in nt2 or nt2 in nt1):
-            err(13, 'one nonterminal cannot be substring of another nonterminal - "%s" and "%s"' % (nt1, nt2))
-
-
 for key in sorted(rules):
     new_rules = []
     for rule in rules[key]:
@@ -100,21 +94,18 @@ for key in sorted(rules):
             new_rules += [eps],
             continue
 
-        for nt in nonterms:
-            if nt in rule:
-                rule = re.sub('(?<!\\\\)%s' % ''.join(['\^' if i == '^' else '[%s]{1}' % i for i in nt]),
-                              '\S' + nt + '\E', rule)
+        curr_rules = []
 
-        while True:
-            terminals = re.findall('\\\\E([^\\\\]{1})', rule)
-            start_terms = re.findall('^[^\\\\]{1}', rule)
-            if not (terminals + start_terms): break
-            for i in terminals:
-                rule = re.sub('(?<=\\\\E)[%s]{1}' % i, '\S' + i + '\E', rule)
-            for i in start_terms:
-                rule = re.sub('^[%s]{1}' % i, '\S' + i + '\E', rule)
+        curr_terms = rule.split()
 
-        new_rules += re.findall('(?<=\\\\S)([^\\\\]*)(?=\\\\E)', rule),
+        for curr_term in curr_terms:
+            if curr_term in nonterms:
+                curr_rules += curr_term,
+
+            else:
+                curr_rules += list(curr_term)
+
+        new_rules += curr_rules,
 
     rules[key] = new_rules
 
@@ -129,7 +120,7 @@ print('Recognized nonterms:', ', '.join(nonterms))
 print('Recognized terms:', ', '.join(terms))
 
 if S0 not in nonterms:
-    err(14, 'initial term "%s" not found in recognized nonterms' % S0)
+    err(13, 'initial term "%s" not found in recognized nonterms' % S0)
 
 print()
 print('Parsed rules: ')
@@ -288,7 +279,7 @@ print_rules(rules)
 
 def find_cycles(path, key, rules, nonterms):
     if key in path:
-        err(15, 'found recursive grammar "%s"' % ' -> '.join(list(path[path.index(key):]) + [key]))
+        err(14, 'found recursive grammar "%s"' % ' -> '.join(list(path[path.index(key):]) + [key]))
     new_path = tuple(list(path) + [key])
     for rule in rules[key]:
         if len(rule) == 1 and rule[0] in nonterms:
