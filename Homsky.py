@@ -1,6 +1,15 @@
 import re
 
 
+old_print = print
+file_output = open('output.txt', 'w')
+
+
+def print(*args, **kwargs):
+    old_print(*args, **kwargs)
+    old_print(*args, **kwargs, file=file_output)
+
+
 def err(num, string):
     print('ERROR %s: %s' % (num, string))
     quit(0)
