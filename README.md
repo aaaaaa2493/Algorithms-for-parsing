@@ -11,7 +11,7 @@
 init a1 \
 a1 -> 0 | \\... | 9 | b1 | c1 | d1 | brace \
 b1 -> A | \\... | D | P | \\... | Z \
-c1->A|B|c1 b1 d1|D| \\\\ |\\eps \ 
+c1->A|B|c1 b1 d1|D| \\\\ |\\eps \
 d1-> \\| | \\|\\| | -> | ->-> \
 brace -> second brace | brace second \
 second -> A | \\... | Z
