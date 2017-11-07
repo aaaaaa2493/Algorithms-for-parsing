@@ -18,6 +18,7 @@ def print(*args, **kwargs):
 
 
 def err(num, string):
+    set_print(True)
     print('ERROR %s: %s' % (num, string))
     quit(0)
 
