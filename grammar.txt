@@ -1,2 +1,2 @@
 init S
-S -> ( S )  | SS | \eps
+S -> (S)S | \eps

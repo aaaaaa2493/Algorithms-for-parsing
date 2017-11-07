@@ -1,9 +1,182 @@
 Grammar in normal Homsky form:
-S  ->  \S1 \S3  |  S S
-\S0  ->  \S1 \S3  |  S S  |  \eps
+S  ->  \S1 \S3
+\S0  ->  \S1 \S3  |  \eps
 \S1  ->  (
 \S2  ->  )
-\S3  ->  S \S2  |  )
+\S3  ->  S \S4  |  \S2 S  |  )
+\S4  ->  \S2 S  |  )
 
 String to test:
-(())()
+"(())()"
+
+
+Start evaluate substrings with length 1
+
+Evaluate substring [0, 0] - "("
+Answers found:
+\S1 -> (
+
+Evaluate substring [1, 1] - "("
+Answers found:
+\S1 -> (
+
+Evaluate substring [2, 2] - ")"
+Answers found:
+\S2 -> )
+\S3 -> )
+\S4 -> )
+
+Evaluate substring [3, 3] - ")"
+Answers found:
+\S2 -> )
+\S3 -> )
+\S4 -> )
+
+Evaluate substring [4, 4] - "("
+Answers found:
+\S1 -> (
+
+Evaluate substring [5, 5] - ")"
+Answers found:
+\S2 -> )
+\S3 -> )
+\S4 -> )
+
+
+Start evaluate substrings with length 2
+
+Evaluate substring [0, 1] - "(("
+Try to process [0, 0] + [1, 1] or [\S1] + [\S1]
+No answers found
+
+Evaluate substring [1, 2] - "()"
+Try to process [1, 1] + [2, 2] or [\S1] + [\S2 \S3 \S4]
+Answers found:
+S -> \S1 \S3
+\S0 -> \S1 \S3
+
+Evaluate substring [2, 3] - "))"
+Try to process [2, 2] + [3, 3] or [\S2 \S3 \S4] + [\S2 \S3 \S4]
+No answers found
+
+Evaluate substring [3, 4] - ")("
+Try to process [3, 3] + [4, 4] or [\S2 \S3 \S4] + [\S1]
+No answers found
+
+Evaluate substring [4, 5] - "()"
+Try to process [4, 4] + [5, 5] or [\S1] + [\S2 \S3 \S4]
+Answers found:
+S -> \S1 \S3
+\S0 -> \S1 \S3
+
+
+Start evaluate substrings with length 3
+
+Evaluate substring [0, 2] - "(()"
+Try to process [0, 0] + [1, 2] or [\S1] + [S \S0]
+No answers found
+Try to process [0, 1] + [2, 2] or [] + [\S2 \S3 \S4]
+No answers found
+
+Evaluate substring [1, 3] - "())"
+Try to process [1, 1] + [2, 3] or [\S1] + []
+No answers found
+Try to process [1, 2] + [3, 3] or [S \S0] + [\S2 \S3 \S4]
+Answers found:
+\S3 -> S \S4
+
+Evaluate substring [2, 4] - "))("
+Try to process [2, 2] + [3, 4] or [\S2 \S3 \S4] + []
+No answers found
+Try to process [2, 3] + [4, 4] or [] + [\S1]
+No answers found
+
+Evaluate substring [3, 5] - ")()"
+Try to process [3, 3] + [4, 5] or [\S2 \S3 \S4] + [S \S0]
+Answers found:
+\S3 -> \S2 S
+\S4 -> \S2 S
+Try to process [3, 4] + [5, 5] or [] + [\S2 \S3 \S4]
+No answers found
+
+
+Start evaluate substrings with length 4
+
+Evaluate substring [0, 3] - "(())"
+Try to process [0, 0] + [1, 3] or [\S1] + [\S3]
+Answers found:
+S -> \S1 \S3
+\S0 -> \S1 \S3
+Try to process [0, 1] + [2, 3] or [] + []
+No answers found
+Try to process [0, 2] + [3, 3] or [] + [\S2 \S3 \S4]
+No answers found
+
+Evaluate substring [1, 4] - "())("
+Try to process [1, 1] + [2, 4] or [\S1] + []
+No answers found
+Try to process [1, 2] + [3, 4] or [S \S0] + []
+No answers found
+Try to process [1, 3] + [4, 4] or [\S3] + [\S1]
+No answers found
+
+Evaluate substring [2, 5] - "))()"
+Try to process [2, 2] + [3, 5] or [\S2 \S3 \S4] + [\S3 \S4]
+No answers found
+Try to process [2, 3] + [4, 5] or [] + [S \S0]
+No answers found
+Try to process [2, 4] + [5, 5] or [] + [\S2 \S3 \S4]
+No answers found
+
+
+Start evaluate substrings with length 5
+
+Evaluate substring [0, 4] - "(())("
+Try to process [0, 0] + [1, 4] or [\S1] + []
+No answers found
+Try to process [0, 1] + [2, 4] or [] + []
+No answers found
+Try to process [0, 2] + [3, 4] or [] + []
+No answers found
+Try to process [0, 3] + [4, 4] or [S \S0] + [\S1]
+No answers found
+
+Evaluate substring [1, 5] - "())()"
+Try to process [1, 1] + [2, 5] or [\S1] + []
+No answers found
+Try to process [1, 2] + [3, 5] or [S \S0] + [\S3 \S4]
+Answers found:
+\S3 -> S \S4
+Try to process [1, 3] + [4, 5] or [\S3] + [S \S0]
+No answers found
+Try to process [1, 4] + [5, 5] or [] + [\S2 \S3 \S4]
+No answers found
+
+
+Start evaluate substrings with length 6
+
+Evaluate substring [0, 5] - "(())()"
+Try to process [0, 0] + [1, 5] or [\S1] + [\S3]
+Answers found:
+S -> \S1 \S3
+\S0 -> \S1 \S3
+Try to process [0, 1] + [2, 5] or [] + []
+No answers found
+Try to process [0, 2] + [3, 5] or [] + [\S3 \S4]
+No answers found
+Try to process [0, 3] + [4, 5] or [S \S0] + [S \S0]
+No answers found
+Try to process [0, 4] + [5, 5] or [] + [\S2 \S3 \S4]
+No answers found
+
+Resulting table:
+  |   0   |   1   |      2      |      3      |   4   |      5     
+0 |  \S1  |       |             |             |       |            
+1 |       |  \S1  |             |             |       |            
+2 |       | S \S0 | \S2 \S3 \S4 |             |       |            
+3 | S \S0 |  \S3  |             | \S2 \S3 \S4 |       |            
+4 |       |       |             |             |  \S1  |            
+5 | S \S0 |  \S3  |             |   \S3 \S4   | S \S0 | \S2 \S3 \S4
+
+Cell [0, 5] has nonterminal \S0
+"(())()" - ACCEPTED
