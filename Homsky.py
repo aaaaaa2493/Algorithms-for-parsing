@@ -17,17 +17,54 @@ def print(*args, **kwargs):
         old_print(*args, **kwargs, file=file_output)
 
 
-def err(num, string):
-    set_print(True)
-    print('ERROR %s: %s' % (num, string))
-    quit(0)
+def get_sequence():
+    i = 1
+    while True:
+        yield i
+        i += 1
 
 
 def get_index():
-    i = 1
-    while True:
+    for i in get_sequence():
         yield '\S%s' % i
-        i += 1
+
+
+def get_error_index():
+    for i in get_sequence():
+        yield 'ERROR %s:' % i
+
+
+errors = {}
+index_error = get_error_index()
+
+
+def add_error(identifier, string):
+    errors[identifier] = next(index_error), string
+
+
+def err(identifier, *args):
+    set_print(True)
+    err_num, string = errors[identifier]
+    print('%s %s' % (err_num, string % args))
+    quit(0)
+
+
+add_error('mul init', 'multiple definitions of initial nonterminal using "init"')
+add_error('just init', 'no initial nonterminal after "init" statement')
+add_error('no ->', 'in rule "%s" not found any "->" symbols')
+add_error('two nons before ->', 'rule must contain only one nonterminal before "->" - "%s"')
+add_error('\\ in nonterm', 'nonterminal can not contain "\\" symbol - "%s"')
+add_error('no init', 'declaration of initial nonterminal using "init" not found')
+add_error('\\ in init', 'initial nonterminal cannot contain special symbol "\\" - "%s"')
+add_error('bad escape', 'found illegal escape symbol in "%s"')
+add_error('empty before \...', 'before symbol "\..." must be some symbol - "%s"')
+add_error('empty after \...',  'after symbol "\..." must be some symbol - "%s"')
+add_error('mult symbols before \...', 'before symbol "\..." must be only one symbol in "%s"')
+add_error('mult symbols after \...', 'after symbol "\..." must be only one symbol in "%s"')
+add_error('a \... b, a > b', 'symbol to the left of "\..." must be less than '
+                             'symbol to the right of "\..." in unicode codes')
+add_error('undefined init', 'initial term "%s" not found in recognized nonterms')
+add_error('recursion', 'found recursive grammar "%s"')
 
 
 def print_rules(rules):
@@ -59,19 +96,20 @@ def to_homsky():
         old_rule = rule
 
         if rule.startswith('init'):
-            if S0: err(1, 'multiple definitions of initial nonterminal using "init"')
+            if S0: err('mul init')
             try: S0 = ''.join(rule.split(' ', 1)[1].split()) or 0/0
-            except: err(2, 'no initial nonterminal after "init" statement')
+            except: err('just init')
 
         else:
             sp = rule.split('->', 1)
-            if len(sp) < 2: err(3, 'in rule "%s" not found any "->" symbols' % old_rule)
+            if len(sp) < 2: err('no ->', old_rule)
             sp[0] = sp[0].strip()
-            if len(sp[0].split()) > 1: err(4, 'rule must contain only one nonterminal before "->" - "%s"' % rule)
+            if len(sp[0].split()) > 1: err('two nons before ->', rule)
+            if '\\' in sp[0]: err('\\ in nonterm', rule)
             formatted_rules += (sp[0], sp[1]),
 
-    if not S0: err(5, 'declaration of initial nonterminal using "init" not found')
-    if '\\' in S0: err(6, 'initial nonterminal cannot contain special symbol "\\" - "%s"' % S0)
+    if not S0: err('no init')
+    if '\\' in S0: err('\\ in init', S0)
 
     rules = {}
     for nonterm, right_side in formatted_rules:
@@ -80,20 +118,19 @@ def to_homsky():
             old_rules = rules.get(nonterm,[])
             if t not in old_rules:
                 if '\\' in t and t not in specials and sum(t.count(j) for j in escaped) != t.count('\\') - t.count('\\\\'):
-                    err(7, 'found illegal escape symbol in "%s"' % t)
+                    err('bad escape', t)
                 if t == dots:
                     if i == 0:
-                        err(8, 'before symbol "\..." must be some symbol - "%s"' % right_side)
+                        err('empty before \...', '  |  '.join(right_side))
                     elif i == len(right_side) - 1:
-                        err(9, 'after symbol "\..." must be some symbol - "%s"' % right_side)
+                        err('empty after \...', '  |  '.join(right_side))
                     else:
                         if len(right_side[i-1]) != 1:
-                            err(10, 'before symbol "\..." must be only one symbol in "%s"' % right_side)
+                            err('mult symbols before \...', '  |  '.join(right_side))
                         elif len(right_side[i+1]) != 1:
-                            err(11, 'after symbol "\..." must be only one symbol in "%s"' % right_side)
+                            err('mult symbols after \...', '  |  '.join(right_side))
                         elif ord(right_side[i+1]) - ord(right_side[i-1]) < 1:
-                            err(12, 'symbol to the left of "\..." must be less than '
-                                    'symbol to the right of "\..." in unicode codes')
+                            err('a \... b, a > b')
                         else:
                             dotted_symbols = [chr(i) for i in range(ord(right_side[i-1]) + 1, ord(right_side[i+1]))]
                             rules[nonterm] = old_rules + dotted_symbols
@@ -136,7 +173,7 @@ def to_homsky():
     print('Recognized terms:', ', '.join(terms))
 
     if S0 not in nonterms:
-        err(13, 'initial term "%s" not found in recognized nonterms' % S0)
+        err('undefined init', S0)
 
     print()
     print('Parsed rules: ')
@@ -285,7 +322,7 @@ def to_homsky():
 
     def find_cycles(path, key, rules, nonterms):
         if key in path:
-            err(14, 'found recursive grammar "%s"' % ' -> '.join(list(path[path.index(key):]) + [key]))
+            err('recursion', ' -> '.join(list(path[path.index(key):]) + [key]))
         new_path = tuple(list(path) + [key])
         for rule in rules[key]:
             if len(rule) == 1 and rule[0] in nonterms:
