@@ -2,7 +2,6 @@ import sys
 sys.dont_write_bytecode = True
 
 from Homsky import *
-from pprint import pprint
 
 
 def format_matrix(header,
