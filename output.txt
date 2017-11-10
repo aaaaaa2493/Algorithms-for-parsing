@@ -55,18 +55,18 @@ T  ->  ( E ) \S2  |  0 \S2  |  1 \S2  |  2 \S2  |  3 \S2  |  4 \S2  |  5 \S2  | 
 \S2  ->  \eps  |  * F \S2
 
 Create FIRST set
-FIRST( E ) = { (, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }
-FIRST( F ) = { (, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }
-FIRST( T ) = { (, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }
-FIRST( \S1 ) = { -, \eps }
-FIRST( \S2 ) = { *, \eps }
+FIRST( E ) =  (  0  1  2  3  4  5  6  7  8  9
+FIRST( F ) =  (  0  1  2  3  4  5  6  7  8  9
+FIRST( T ) =  (  0  1  2  3  4  5  6  7  8  9
+FIRST( \S1 ) =  -  \eps
+FIRST( \S2 ) =  *  \eps
 
 Create FOLLOW set
-FOLLOW( E ) = { \$, ) }
-FOLLOW( F ) = { *, -, \$, ) }
-FOLLOW( T ) = { -, \$, ) }
-FOLLOW( \S1 ) = { \$, ) }
-FOLLOW( \S2 ) = { -, \$, ) }
+FOLLOW( E ) =  \$  )
+FOLLOW( F ) =  *  -  \$  )
+FOLLOW( T ) =  -  \$  )
+FOLLOW( \S1 ) =  \$  )
+FOLLOW( \S2 ) =  -  \$  )
 
     |         FIRST         |  FOLLOW  |     (     |  )   |    *    |    -    |   0   |   1   |   2   |   3   |   4   |   5   |   6   |   7   |   8   |   9   |  \$ 
 E   | ( 0 1 2 3 4 5 6 7 8 9 |   \$ )   |   T \S1   |      |         |         | T \S1 | T \S1 | T \S1 | T \S1 | T \S1 | T \S1 | T \S1 | T \S1 | T \S1 | T \S1 |     
@@ -74,3 +74,182 @@ F   | ( 0 1 2 3 4 5 6 7 8 9 | * - \$ ) |   ( E )   |      |         |         | 
 T   | ( 0 1 2 3 4 5 6 7 8 9 |  - \$ )  | ( E ) \S2 |      |         |         | 0 \S2 | 1 \S2 | 2 \S2 | 3 \S2 | 4 \S2 | 5 \S2 | 6 \S2 | 7 \S2 | 8 \S2 | 9 \S2 |     
 \S1 |        - \eps         |   \$ )   |           | \eps |         | - T \S1 |       |       |       |       |       |       |       |       |       |       | \eps
 \S2 |        * \eps         |  - \$ )  |           | \eps | * F \S2 |  \eps   |       |       |       |       |       |       |       |       |       |       | \eps
+
+START TO ANALYSE
+
+String to test:
+1-(5*(5-2)-9)
+
+Stack:  \$  E
+To analyse: 1-(5*(5-2)-9)\$
+Next symbol: 1
+Using rule E -> T \S1
+
+Stack:  \$  \S1  T
+To analyse: 1-(5*(5-2)-9)\$
+Next symbol: 1
+Using rule T -> 1 \S2
+
+Stack:  \$  \S1  \S2  1
+To analyse: 1-(5*(5-2)-9)\$
+Next symbol: 1
+
+Stack:  \$  \S1  \S2
+To analyse: -(5*(5-2)-9)\$
+Next symbol: -
+Using rule \S2 -> \eps
+
+Stack:  \$  \S1
+To analyse: -(5*(5-2)-9)\$
+Next symbol: -
+Using rule \S1 -> - T \S1
+
+Stack:  \$  \S1  T  -
+To analyse: -(5*(5-2)-9)\$
+Next symbol: -
+
+Stack:  \$  \S1  T
+To analyse: (5*(5-2)-9)\$
+Next symbol: (
+Using rule T -> ( E ) \S2
+
+Stack:  \$  \S1  \S2  )  E  (
+To analyse: (5*(5-2)-9)\$
+Next symbol: (
+
+Stack:  \$  \S1  \S2  )  E
+To analyse: 5*(5-2)-9)\$
+Next symbol: 5
+Using rule E -> T \S1
+
+Stack:  \$  \S1  \S2  )  \S1  T
+To analyse: 5*(5-2)-9)\$
+Next symbol: 5
+Using rule T -> 5 \S2
+
+Stack:  \$  \S1  \S2  )  \S1  \S2  5
+To analyse: 5*(5-2)-9)\$
+Next symbol: 5
+
+Stack:  \$  \S1  \S2  )  \S1  \S2
+To analyse: *(5-2)-9)\$
+Next symbol: *
+Using rule \S2 -> * F \S2
+
+Stack:  \$  \S1  \S2  )  \S1  \S2  F  *
+To analyse: *(5-2)-9)\$
+Next symbol: *
+
+Stack:  \$  \S1  \S2  )  \S1  \S2  F
+To analyse: (5-2)-9)\$
+Next symbol: (
+Using rule F -> ( E )
+
+Stack:  \$  \S1  \S2  )  \S1  \S2  )  E  (
+To analyse: (5-2)-9)\$
+Next symbol: (
+
+Stack:  \$  \S1  \S2  )  \S1  \S2  )  E
+To analyse: 5-2)-9)\$
+Next symbol: 5
+Using rule E -> T \S1
+
+Stack:  \$  \S1  \S2  )  \S1  \S2  )  \S1  T
+To analyse: 5-2)-9)\$
+Next symbol: 5
+Using rule T -> 5 \S2
+
+Stack:  \$  \S1  \S2  )  \S1  \S2  )  \S1  \S2  5
+To analyse: 5-2)-9)\$
+Next symbol: 5
+
+Stack:  \$  \S1  \S2  )  \S1  \S2  )  \S1  \S2
+To analyse: -2)-9)\$
+Next symbol: -
+Using rule \S2 -> \eps
+
+Stack:  \$  \S1  \S2  )  \S1  \S2  )  \S1
+To analyse: -2)-9)\$
+Next symbol: -
+Using rule \S1 -> - T \S1
+
+Stack:  \$  \S1  \S2  )  \S1  \S2  )  \S1  T  -
+To analyse: -2)-9)\$
+Next symbol: -
+
+Stack:  \$  \S1  \S2  )  \S1  \S2  )  \S1  T
+To analyse: 2)-9)\$
+Next symbol: 2
+Using rule T -> 2 \S2
+
+Stack:  \$  \S1  \S2  )  \S1  \S2  )  \S1  \S2  2
+To analyse: 2)-9)\$
+Next symbol: 2
+
+Stack:  \$  \S1  \S2  )  \S1  \S2  )  \S1  \S2
+To analyse: )-9)\$
+Next symbol: )
+Using rule \S2 -> \eps
+
+Stack:  \$  \S1  \S2  )  \S1  \S2  )  \S1
+To analyse: )-9)\$
+Next symbol: )
+Using rule \S1 -> \eps
+
+Stack:  \$  \S1  \S2  )  \S1  \S2  )
+To analyse: )-9)\$
+Next symbol: )
+
+Stack:  \$  \S1  \S2  )  \S1  \S2
+To analyse: -9)\$
+Next symbol: -
+Using rule \S2 -> \eps
+
+Stack:  \$  \S1  \S2  )  \S1
+To analyse: -9)\$
+Next symbol: -
+Using rule \S1 -> - T \S1
+
+Stack:  \$  \S1  \S2  )  \S1  T  -
+To analyse: -9)\$
+Next symbol: -
+
+Stack:  \$  \S1  \S2  )  \S1  T
+To analyse: 9)\$
+Next symbol: 9
+Using rule T -> 9 \S2
+
+Stack:  \$  \S1  \S2  )  \S1  \S2  9
+To analyse: 9)\$
+Next symbol: 9
+
+Stack:  \$  \S1  \S2  )  \S1  \S2
+To analyse: )\$
+Next symbol: )
+Using rule \S2 -> \eps
+
+Stack:  \$  \S1  \S2  )  \S1
+To analyse: )\$
+Next symbol: )
+Using rule \S1 -> \eps
+
+Stack:  \$  \S1  \S2  )
+To analyse: )\$
+Next symbol: )
+
+Stack:  \$  \S1  \S2
+To analyse: \$
+Next symbol: \$
+Using rule \S2 -> \eps
+
+Stack:  \$  \S1
+To analyse: \$
+Next symbol: \$
+Using rule \S1 -> \eps
+
+Stack:  \$
+To analyse: \$
+Next symbol: \$
+
+Stack is empty and test string reached \$
+"1-(5*(5-2)-9)" - ACCEPTED

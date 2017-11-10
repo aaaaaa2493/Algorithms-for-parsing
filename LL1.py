@@ -2,8 +2,7 @@ import sys
 sys.dont_write_bytecode = True
 
 from MakeGrammar import *
-from time import sleep
-from pprint import pprint
+
 
 def do_LL1():
 
@@ -255,10 +254,9 @@ def do_LL1():
                         curr_set += rule[0],
                         something_changed = True
             first[key] = sorted(curr_set)
-            #print('FIRST( %s ) = { %s }' % (key, ', '.join(curr_set)))
 
     for key in sorted(rules):
-        print('FIRST( %s ) = { %s }' % (key, ', '.join(first[key])))
+        print('FIRST( %s ) =  %s' % (key, '  '.join(first[key])))
 
     print()
     print('Create FOLLOW set')
@@ -277,12 +275,10 @@ def do_LL1():
             for other_key in sorted(rules):
                 for rule in rules[other_key]:
                     if key in rule:
-                        #print('KEY', key, other_key, rule)
                         for curr_index, curr_term in enumerate(rule[:-1]):
                             if rule[curr_index] == key:
                                 next_term = rule[curr_index + 1]
                                 if next_term in nonterms:
-                                    #print('KEYFIRST', key, other_key, next_term, rule, first[next_term])
                                     for term in first[next_term]:
                                         if term not in curr_follow and term != eps:
                                             something_changed = True
@@ -294,7 +290,6 @@ def do_LL1():
             for other_key in sorted(rules):
                 for rule in rules[other_key]:
                     if key in rule:
-                        #print('KEY2', key, other_key, rule)
                         for curr_index, curr_term in enumerate(rule[:-1]):
                             if rule[curr_index] == key:
                                 if all(next_term in nonterms and eps in first.get(next_term, [])
@@ -310,12 +305,13 @@ def do_LL1():
                                     curr_follow += other_follow_elem,
 
     for key in sorted(rules):
-        print('FOLLOW( %s ) = { %s }' % (key, ', '.join(follow[key])))
+        print('FOLLOW( %s ) =  %s' % (key, '  '.join(follow[key])))
 
     header = ['FIRST', 'FOLLOW'] + [term for term in sorted(terms + [end])]
     lefter = [key for key in sorted(rules)]
 
     table = []
+    keys_bind = {}
     for key in sorted(rules):
         new_row = [' '.join(first[key]), ' '.join(follow[key])]
         terms_bind = {term: '' for term in terms + [end]}
@@ -335,9 +331,65 @@ def do_LL1():
                     terms_bind[term] = ' '.join([eps])
         new_row += [terms_bind[term] for term in sorted(terms_bind)]
         table += new_row,
+        keys_bind[key] = terms_bind
 
     print()
     print(format_matrix(header, lefter, table))
+    print()
+
+    tst = test
+
+    print('START TO ANALYSE')
+    print()
+    print('String to test:')
+    print('%s' % tst)
+
+    tst = list(tst) + [end]
+
+    stack = [end, S0]
+
+    while True:
+
+        if not tst:
+            print()
+            if not stack:
+                print('Stack is empty and test string reached \$')
+                print_result(True)
+            else:
+                print('Stack:  %s' % ('  '.join(stack)))
+                print('Test string reached \$ but stack is not empty')
+                print_result(False)
+
+        print()
+        print('Stack:  %s' % ('  '.join(stack)))
+        print('To analyse: %s' % (''.join(tst)))
+        print('Next symbol: %s' % tst[0])
+
+        *stack, from_stack = stack
+        next_symbol = tst[0]
+
+        if next_symbol not in terms and next_symbol != end:
+            print('"%s" contain symbol not represented in grammar - "%s"' % (test, next_symbol))
+            print_result(False)
+
+        if from_stack in nonterms:
+            if keys_bind[from_stack][next_symbol]:
+                print('Using rule %s -> %s' % (from_stack, keys_bind[from_stack][next_symbol]))
+                if keys_bind[from_stack][next_symbol] != eps:
+                    stack += keys_bind[from_stack][next_symbol].split()[::-1]
+
+            else:
+                print('Rule across nonterminal %s and symbol %s does not exist' % (from_stack, next_symbol))
+                print_result(False)
+
+        else:
+            if next_symbol != from_stack:
+                print('Symbols %s and symbol %s are not equal' % (from_stack, next_symbol))
+                print_result(False)
+
+            else:
+                tst = tst[1:]
+
 
 if __name__ == '__main__':
     do_LL1()

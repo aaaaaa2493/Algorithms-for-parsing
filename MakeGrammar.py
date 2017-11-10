@@ -10,6 +10,14 @@ def set_print(boolean):
     do_print = boolean
 
 
+def print_result(boolean):
+    if boolean:
+        print('"%s" - ACCEPTED' % test)
+    else:
+        print('"%s" - REJECTED' % test)
+    quit(0)
+
+
 def print(*args, **kwargs):
     if do_print:
         old_print(*args, **kwargs)
@@ -90,6 +98,7 @@ def print_rules(rules):
 
 
 initial = open('grammar.txt').read()
+test = open('test.txt').read()
 
 specials = ['\eps', '\...']
 eps, dots = specials

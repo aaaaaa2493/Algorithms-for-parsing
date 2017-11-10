@@ -3,16 +3,6 @@ sys.dont_write_bytecode = True
 
 from Homsky import *
 
-test = open('test.txt').read()
-
-
-def print_result(boolean):
-    if boolean:
-        print('"%s" - ACCEPTED' % test)
-    else:
-        print('"%s" - REJECTED' % test)
-    quit(0)
-
 
 def do_CYK():
     terms, nonterms, rules = to_homsky()
