@@ -327,7 +327,7 @@ def do_LL1():
                             terms_bind[term] = 'CONFLICT'
                         else:
                             terms_bind[term] = ' '.join(rule)
-        if [eps] in rules[key]:
+        if eps in first[key]:
             for term in follow[key]:
                 if terms_bind[term]:
                     terms_bind[term] = 'CONFLICT'
