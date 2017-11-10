@@ -1,4 +1,4 @@
-# Formal languages, homework # 6 by Vladimir Turov
+# Formal languages by Vladimir Turov
 
 ## Приведение в нормальную форму Хомского
 
