@@ -1,0 +1,23 @@
+S -> a S'
+S' -> A b B S' | \eps
+A -> a A' | \eps
+A' -> b | a
+B -> c | \eps
+
+
+S' -> S
+S -> L = R | R
+R -> L
+L -> * R | id
+
+
+E -> E - T | T
+T -> T * F | F
+F -> (E) | D
+D -> 0 | \... | 9
+
+
+S -> S(S) | \eps
+
+
+S -> aSSbS|aSaSb|abb|b

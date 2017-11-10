@@ -207,6 +207,130 @@ def do_LL1():
 
     print_rules(rules)
 
+    print('Delete duplicates')
+
+    for key in sorted(rules):
+        new_rules = []
+        for rule in rules[key]:
+            if rule not in new_rules:
+                new_rules += rule,
+        rules[key][:] = new_rules
+
+    print_rules(rules)
+
+    for key in sorted(rules):
+        rules[key][:] = [rule for rule in rules[key] if rule != [key]]
+
+    print('Delete unused rules')
+
+    def depth_search(marked, key, rules):
+        marked = tuple(list(marked) + [key])
+        for rule in rules[key]:
+            for term in rule:
+                if term in nonterms and term not in marked:
+                    marked = depth_search(marked, term, rules)
+        return marked
+
+    used_in_rules = depth_search((), S0, rules)
+
+    for key in sorted(rules):
+        if key not in used_in_rules:
+            del rules[key]
+
+    print_rules(rules)
+
+    print('Create FIRST set')
+
+    first = {}
+    for key in sorted(rules):
+        first[key] = []
+
+    something_changed = True
+    while something_changed:
+        something_changed = False
+        for key in reversed(sorted(rules)):
+            curr_set = first.get(key, [])
+            for rule in rules[key]:
+                if rule[0] not in curr_set:
+                    if rule[0] in nonterms:
+                        curr_index = 0
+                        something_changed1 = True
+                        while something_changed1:
+                            something_changed1 = False
+
+                            for other_set_elem in first.get(rule[curr_index], []):
+                                if other_set_elem not in curr_set:
+                                    curr_set += other_set_elem,
+                                    something_changed = True
+
+                            if [eps] in rules[rule[curr_index]] and curr_index + 1 < len(rule):
+                                if rule[curr_index+1] in terms:
+                                    if rule[curr_index+1] not in curr_set:
+                                        curr_set += rule[curr_index+1],
+                                    break
+                                else:
+                                    curr_index += 1
+                                    something_changed1 = True
+                    else:
+                        curr_set += rule[0],
+                        something_changed = True
+            first[key] = sorted(curr_set)
+            #print('FIRST( %s ) = { %s }' % (key, ', '.join(curr_set)))
+
+    for key in sorted(rules):
+        print('FIRST( %s ) = { %s }' % (key, ', '.join(first[key])))
+
+    print()
+    print('Create FOLLOW set')
+
+    follow = {S0: [end]}
+
+    for key in sorted(rules):
+        if key not in follow:
+            follow[key] = []
+
+    something_changed = True
+    while something_changed:
+        something_changed = False
+        for key in sorted(rules):
+            curr_follow = follow.get(key, [])
+            for other_key in sorted(rules):
+                for rule in rules[other_key]:
+                    if key in rule:
+                        #print('KEY', key, other_key, rule)
+                        for curr_index, curr_term in enumerate(rule[:-1]):
+                            if rule[curr_index] == key:
+                                next_term = rule[curr_index + 1]
+                                if next_term in nonterms:
+                                    #print('KEYFIRST', key, other_key, next_term, rule, first[next_term])
+                                    for term in first[next_term]:
+                                        if term not in curr_follow and term != eps:
+                                            something_changed = True
+                                            curr_follow += term,
+                                else:
+                                    if next_term not in curr_follow and next_term != eps:
+                                        something_changed = True
+                                        curr_follow += next_term,
+            for other_key in sorted(rules):
+                for rule in rules[other_key]:
+                    if key in rule:
+                        #print('KEY2', key, other_key, rule)
+                        for curr_index, curr_term in enumerate(rule[:-1]):
+                            if rule[curr_index] == key:
+                                if all(next_term in nonterms and eps in first.get(next_term, [])
+                                       for next_term in rule[curr_index + 1:]):
+                                    for other_follow_elem in follow.get(other_key, []):
+                                        if other_follow_elem not in curr_follow:
+                                            something_changed = True
+                                            curr_follow += other_follow_elem,
+                        if rule[-1] == key:
+                            for other_follow_elem in follow.get(other_key, []):
+                                if other_follow_elem not in curr_follow:
+                                    something_changed = True
+                                    curr_follow += other_follow_elem,
+
+    for key in sorted(rules):
+        print('FOLLOW( %s ) = { %s }' % (key, ', '.join(follow[key])))
 
 if __name__ == '__main__':
     do_LL1()

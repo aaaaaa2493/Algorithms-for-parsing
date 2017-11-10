@@ -18,3 +18,22 @@ S  ->  a S'  |  b
 S'  ->  S S''  |  b b
 S''  ->  S b S  |  a S b
 
+Delete duplicates
+S  ->  a S'  |  b
+S'  ->  S S''  |  b b
+S''  ->  S b S  |  a S b
+
+Delete unused rules
+S  ->  a S'  |  b
+S'  ->  S S''  |  b b
+S''  ->  S b S  |  a S b
+
+Create FIRST set
+FIRST( S ) = { a, b }
+FIRST( S' ) = { a, b }
+FIRST( S'' ) = { a, b }
+
+Create FOLLOW set
+FOLLOW( S ) = { \$, a, b }
+FOLLOW( S' ) = { \$, a, b }
+FOLLOW( S'' ) = { \$, a, b }

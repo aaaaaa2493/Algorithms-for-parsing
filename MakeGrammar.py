@@ -16,6 +16,27 @@ def print(*args, **kwargs):
         old_print(*args, **kwargs, file=file_output)
 
 
+def format_matrix(header,
+                  matrix,
+                  top_format='{:^{}}',
+                  left_format='{:<{}}',
+                  cell_format='{:^{}}',
+                  row_delim='\n',
+                  col_delim=' | '):
+    table = [[''] + header] + [[name] + row for name, row in zip(header, matrix)]
+    table_format = [['{:^{}}'] + len(header) * [top_format]] \
+                 + len(matrix) * [[left_format] + len(header) * [cell_format]]
+    col_widths = [max(
+                      len(format.format(cell, 0))
+                      for format, cell in zip(col_format, col))
+                  for col_format, col in zip(zip(*table_format), zip(*table))]
+    return row_delim.join(
+               col_delim.join(
+                   format.format(cell, width)
+                   for format, cell, width in zip(row_format, row, col_widths))
+               for row_format, row in zip(table_format, table))
+
+
 def get_sequence():
     i = 1
     while True:
@@ -49,13 +70,9 @@ def err(identifier, *args):
     quit(0)
 
 
-add_error('mul init', 'multiple definitions of initial nonterminal using "init"')
-add_error('just init', 'no initial nonterminal after "init" statement')
 add_error('no ->', 'in rule "%s" not found any "->" symbols')
 add_error('two nons before ->', 'rule must contain only one nonterminal before "->" - "%s"')
 add_error('\\ in nonterm', 'nonterminal can not contain "\\" symbol - "%s"')
-add_error('no init', 'declaration of initial nonterminal using "init" not found')
-add_error('\\ in init', 'initial nonterminal cannot contain special symbol "\\" - "%s"')
 add_error('bad escape', 'found illegal escape symbol in "%s"')
 add_error('empty before \...', 'before symbol "\..." must be some symbol - "%s"')
 add_error('empty after \...',  'after symbol "\..." must be some symbol - "%s"')
@@ -63,7 +80,6 @@ add_error('mult symbols before \...', 'before symbol "\..." must be only one sym
 add_error('mult symbols after \...', 'after symbol "\..." must be only one symbol in "%s"')
 add_error('a \... b, a > b', 'symbol to the left of "\..." must be less than '
                              'symbol to the right of "\..." in unicode codes')
-add_error('undefined init', 'initial term "%s" not found in recognized nonterms')
 
 
 def print_rules(rules):
@@ -76,6 +92,8 @@ initial = open('grammar.txt').read()
 
 specials = ['\eps', '\...']
 eps, dots = specials
+hidden_specials = ['\$']
+end = hidden_specials[0]
 
 escaped = ['\|', '\\\\']
 
@@ -93,24 +111,13 @@ def make_grammar():
     formatted_rules = []
     for rule in all_rules:
         old_rule = rule
-
-        if rule.startswith('init'):
-            if S0: err('mul init')
-            try:
-                S0 = ''.join(rule.split(' ', 1)[1].split()) or 0 / 0
-            except:
-                err('just init')
-
-        else:
-            sp = rule.split('->', 1)
-            if len(sp) < 2: err('no ->', old_rule)
-            sp[0] = sp[0].strip()
-            if len(sp[0].split()) > 1: err('two nons before ->', rule)
-            if '\\' in sp[0]: err('\\ in nonterm', rule)
-            formatted_rules += (sp[0], sp[1]),
-
-    if not S0: err('no init')
-    if '\\' in S0: err('\\ in init', S0)
+        sp = rule.split('->', 1)
+        if len(sp) < 2: err('no ->', old_rule)
+        sp[0] = sp[0].strip()
+        if len(sp[0].split()) > 1: err('two nons before ->', rule)
+        if '\\' in sp[0]: err('\\ in nonterm', rule)
+        if not S0: S0 = sp[0]
+        formatted_rules += (sp[0], sp[1]),
 
     rules = {}
     for nonterm, right_side in formatted_rules:
@@ -173,9 +180,6 @@ def make_grammar():
 
     print('Recognized nonterms:', ', '.join(nonterms))
     print('Recognized terms:', ', '.join(terms))
-
-    if S0 not in nonterms:
-        err('undefined init', S0)
 
     print()
     print('Parsed rules: ')

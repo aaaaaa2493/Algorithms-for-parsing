@@ -1,2 +1,4 @@
-init S
-S->aSSbS| aSaSb| abb| b
+E -> E - T | T
+T -> T * F | F
+F -> (E) | D
+D -> 0 | \... | 9
