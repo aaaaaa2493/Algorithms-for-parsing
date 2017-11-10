@@ -23,8 +23,8 @@ c -> a | \\... \
 d -> z | \\... | a \
 e -> \\wrong
 
-Чтобы запустить на Linux: python3 Homsky.py \
-Чтобы запустить на Windows: python Homsky.py
+Чтобы запустить на Linux: python3 Chomsky.py \
+Чтобы запустить на Windows: python Chomsky.py
 
 Для Windows необходимо установить python версии не менее 3.4
 
