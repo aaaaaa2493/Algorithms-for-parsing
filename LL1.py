@@ -2,13 +2,14 @@ import sys
 sys.dont_write_bytecode = True
 
 from MakeGrammar import *
+from time import sleep
 from pprint import pprint
 
 def do_LL1():
 
     set_print(True)
     S0, terms, nonterms, rules = make_grammar()
-    '''
+
     print('Avoid left recursion')
 
     something_changed = True
@@ -36,7 +37,10 @@ def do_LL1():
                 new_key = next(index)
 
                 for rule in not_consist:
-                    new_rules += [rule + [new_key]]
+                    if rule != [eps]:
+                        new_rules += [rule + [new_key]]
+                    else:
+                        new_rules += [[new_key]]
 
                 for rule in consist_key:
                     rules_for_new_key += [rule + [new_key]]
@@ -45,7 +49,7 @@ def do_LL1():
                 rules[new_key] = rules_for_new_key
 
     print_rules(rules)
-    '''
+
     print('Delete epsilon - products')
 
     something_changed = True
@@ -95,7 +99,7 @@ def do_LL1():
                         if other_rule != [eps]:
                             new_rules += [other_rule + rule[1:]]
                         else:
-                            new_rules += [rule[1:]] if rule[1:] else [eps]
+                            new_rules += [rule[1:]] if rule[1:] else []
 
                 else:
                     new_rules += rule,
@@ -122,13 +126,17 @@ def do_LL1():
                 new_key = next(index)
 
                 for rule in not_consist:
-                    new_rules += [rule + [new_key]]
+                    if rule != [eps]:
+                        new_rules += [rule + [new_key]]
+                    else:
+                        new_rules += [[new_key]]
 
                 for rule in consist_key:
                     rules_for_new_key += [rule + [new_key]]
 
                 rules[key][:] = new_rules
                 rules[new_key] = rules_for_new_key
+
         '''
         for key in sorted(rules):
             if len(rules[key]) == 0:
@@ -165,9 +173,16 @@ def do_LL1():
                 if max_start[0] < curr_count > 1:
                     max_start = curr_count, rule[0]
 
-            if max_start[0] > 1 and len([rule for rule in rules[key] if rule[0] == max_start[1] and len(rule) > 1]) > 1:
+            all_vars = [rule for rule in rules[key] if rule[0] == max_start[1] and len(rule) > 1]
+
+            if max_start[0] > 1 and len(all_vars) > 1:
                 something_changed = True
-                max_start = max_start[1]
+
+                curr_max = 1
+                while all(rule[:curr_max+1] == all_vars[0][:curr_max+1] for rule in all_vars):
+                    curr_max += 1
+
+                max_start = all_vars[0][:curr_max]
 
                 new_key = key + '\''
                 if new_key in rules:
@@ -178,12 +193,12 @@ def do_LL1():
                         gen_key = new_key + str(integer)
                     new_key = gen_key
 
-                new_rules = [[max_start, new_key]]
+                new_rules = [max_start + [new_key]]
                 rules_for_new_key = []
 
                 for rule in rules[key]:
-                    if rule[0] == max_start and len(rule) > 1:
-                        rules_for_new_key += rule[1:],
+                    if rule[:curr_max] == max_start and len(rule) > 1:
+                        rules_for_new_key += rule[curr_max:] if rule[curr_max:] else [eps],
                     else:
                         new_rules += rule,
 
@@ -191,10 +206,6 @@ def do_LL1():
                 rules[key] = new_rules
 
     print_rules(rules)
-
-
-
-
 
 
 if __name__ == '__main__':

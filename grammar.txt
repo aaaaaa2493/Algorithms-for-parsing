@@ -1,2 +1,2 @@
 init S
-S -> aaSSbS| aaSaSb| aabb| b
+S->aSSbS| aSaSb| abb| b
