@@ -1,39 +1,76 @@
-Recognized nonterms: S
-Recognized terms: a, b
+Recognized nonterms: E, T, F, D
+Recognized terms: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, -, (, ), *
 
 Parsed rules: 
-S  ->  a S S b S  |  a S a S b  |  a b b  |  b
+D  ->  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9
+E  ->  E - T  |  T
+F  ->  ( E )  |  D
+T  ->  T * F  |  F
 
 Avoid left recursion
-S  ->  a S S b S  |  a S a S b  |  a b b  |  b
+D  ->  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9
+E  ->  T \S1
+F  ->  ( E )  |  D
+T  ->  F \S2
+\S1  ->  \eps  |  - T \S1
+\S2  ->  \eps  |  * F \S2
 
 Delete epsilon - products
-S  ->  a S S b S  |  a S a S b  |  a b b  |  b
+D  ->  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9
+E  ->  T \S1
+F  ->  ( E )  |  D
+T  ->  F \S2
+\S1  ->  \eps  |  - T \S1
+\S2  ->  \eps  |  * F \S2
 
 Remove double recursion
-S  ->  a S S b S  |  a S a S b  |  a b b  |  b
+D  ->  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9
+E  ->  T \S1
+F  ->  ( E )  |  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9
+T  ->  ( E ) \S2  |  0 \S2  |  1 \S2  |  2 \S2  |  3 \S2  |  4 \S2  |  5 \S2  |  6 \S2  |  7 \S2  |  8 \S2  |  9 \S2
+\S1  ->  \eps  |  - T \S1
+\S2  ->  \eps  |  * F \S2
 
 Isolate biggest common terminals
-S  ->  a S'  |  b
-S'  ->  S S''  |  b b
-S''  ->  S b S  |  a S b
+D  ->  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9
+E  ->  T \S1
+F  ->  ( E )  |  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9
+T  ->  ( E ) \S2  |  0 \S2  |  1 \S2  |  2 \S2  |  3 \S2  |  4 \S2  |  5 \S2  |  6 \S2  |  7 \S2  |  8 \S2  |  9 \S2
+\S1  ->  \eps  |  - T \S1
+\S2  ->  \eps  |  * F \S2
 
 Delete duplicates
-S  ->  a S'  |  b
-S'  ->  S S''  |  b b
-S''  ->  S b S  |  a S b
+D  ->  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9
+E  ->  T \S1
+F  ->  ( E )  |  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9
+T  ->  ( E ) \S2  |  0 \S2  |  1 \S2  |  2 \S2  |  3 \S2  |  4 \S2  |  5 \S2  |  6 \S2  |  7 \S2  |  8 \S2  |  9 \S2
+\S1  ->  \eps  |  - T \S1
+\S2  ->  \eps  |  * F \S2
 
 Delete unused rules
-S  ->  a S'  |  b
-S'  ->  S S''  |  b b
-S''  ->  S b S  |  a S b
+E  ->  T \S1
+F  ->  ( E )  |  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9
+T  ->  ( E ) \S2  |  0 \S2  |  1 \S2  |  2 \S2  |  3 \S2  |  4 \S2  |  5 \S2  |  6 \S2  |  7 \S2  |  8 \S2  |  9 \S2
+\S1  ->  \eps  |  - T \S1
+\S2  ->  \eps  |  * F \S2
 
 Create FIRST set
-FIRST( S ) = { a, b }
-FIRST( S' ) = { a, b }
-FIRST( S'' ) = { a, b }
+FIRST( E ) = { (, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }
+FIRST( F ) = { (, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }
+FIRST( T ) = { (, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }
+FIRST( \S1 ) = { -, \eps }
+FIRST( \S2 ) = { *, \eps }
 
 Create FOLLOW set
-FOLLOW( S ) = { \$, a, b }
-FOLLOW( S' ) = { \$, a, b }
-FOLLOW( S'' ) = { \$, a, b }
+FOLLOW( E ) = { \$, ) }
+FOLLOW( F ) = { *, -, \$, ) }
+FOLLOW( T ) = { -, \$, ) }
+FOLLOW( \S1 ) = { \$, ) }
+FOLLOW( \S2 ) = { -, \$, ) }
+
+    |         FIRST         |  FOLLOW  |     (     |  )   |    *    |    -    |   0   |   1   |   2   |   3   |   4   |   5   |   6   |   7   |   8   |   9   |  \$ 
+E   | ( 0 1 2 3 4 5 6 7 8 9 |   \$ )   |   T \S1   |      |         |         | T \S1 | T \S1 | T \S1 | T \S1 | T \S1 | T \S1 | T \S1 | T \S1 | T \S1 | T \S1 |     
+F   | ( 0 1 2 3 4 5 6 7 8 9 | * - \$ ) |   ( E )   |      |         |         |   0   |   1   |   2   |   3   |   4   |   5   |   6   |   7   |   8   |   9   |     
+T   | ( 0 1 2 3 4 5 6 7 8 9 |  - \$ )  | ( E ) \S2 |      |         |         | 0 \S2 | 1 \S2 | 2 \S2 | 3 \S2 | 4 \S2 | 5 \S2 | 6 \S2 | 7 \S2 | 8 \S2 | 9 \S2 |     
+\S1 |        - \eps         |   \$ )   |           | \eps |         | - T \S1 |       |       |       |       |       |       |       |       |       |       | \eps
+\S2 |        * \eps         |  - \$ )  |           | \eps | * F \S2 |  \eps   |       |       |       |       |       |       |       |       |       |       | \eps

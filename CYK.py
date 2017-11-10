@@ -108,7 +108,9 @@ def do_CYK():
         total_table[elem[1]][elem[0]] = ' '.join(memory[elem])
 
     print('Resulting table:')
-    print(format_matrix([str(i) for i in range(total_length)], total_table))
+    print(format_matrix([str(i) for i in range(total_length)],
+                        [str(i) for i in range(total_length)],
+                        total_table))
     print()
 
     if '\S0' in memory[(0, total_length - 1)]:

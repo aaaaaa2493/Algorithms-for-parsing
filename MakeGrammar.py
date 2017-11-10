@@ -17,13 +17,14 @@ def print(*args, **kwargs):
 
 
 def format_matrix(header,
+                  lefter,
                   matrix,
                   top_format='{:^{}}',
                   left_format='{:<{}}',
                   cell_format='{:^{}}',
                   row_delim='\n',
                   col_delim=' | '):
-    table = [[''] + header] + [[name] + row for name, row in zip(header, matrix)]
+    table = [[''] + header] + [[name] + row for name, row in zip(lefter, matrix)]
     table_format = [['{:^{}}'] + len(header) * [top_format]] \
                  + len(matrix) * [[left_format] + len(header) * [cell_format]]
     col_widths = [max(

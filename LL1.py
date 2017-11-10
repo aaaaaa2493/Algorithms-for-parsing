@@ -137,26 +137,6 @@ def do_LL1():
                 rules[key][:] = new_rules
                 rules[new_key] = rules_for_new_key
 
-        '''
-        for key in sorted(rules):
-            if len(rules[key]) == 0:
-                something_changed = True
-                del rules[key]
-                for other_key in sorted(rules):
-                    new_rules = []
-                    for rule in rules[other_key]:
-                        if key in rule:
-                            new_rule = []
-                            for term in rule:
-                                if term != key:
-                                    new_rule += term,
-                            if not new_rule:
-                                new_rule = [eps]
-                            new_rules += new_rule,
-                        else:
-                            new_rules += rule,
-                    rules[other_key][:] = new_rules'''
-
     print_rules(rules)
 
     print('Isolate biggest common terminals')
@@ -331,6 +311,33 @@ def do_LL1():
 
     for key in sorted(rules):
         print('FOLLOW( %s ) = { %s }' % (key, ', '.join(follow[key])))
+
+    header = ['FIRST', 'FOLLOW'] + [term for term in sorted(terms + [end])]
+    lefter = [key for key in sorted(rules)]
+
+    table = []
+    for key in sorted(rules):
+        new_row = [' '.join(first[key]), ' '.join(follow[key])]
+        terms_bind = {term: '' for term in terms + [end]}
+        for term in terms:
+            if term in first[key]:
+                for rule in rules[key]:
+                    if rule[0] == term or rule[0] in nonterms and term in first[rule[0]]:
+                        if terms_bind[term]:
+                            terms_bind[term] = 'CONFLICT'
+                        else:
+                            terms_bind[term] = ' '.join(rule)
+        if [eps] in rules[key]:
+            for term in follow[key]:
+                if terms_bind[term]:
+                    terms_bind[term] = 'CONFLICT'
+                else:
+                    terms_bind[term] = ' '.join([eps])
+        new_row += [terms_bind[term] for term in sorted(terms_bind)]
+        table += new_row,
+
+    print()
+    print(format_matrix(header, lefter, table))
 
 if __name__ == '__main__':
     do_LL1()
