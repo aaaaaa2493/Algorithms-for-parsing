@@ -1,693 +1,1597 @@
-Grammar in normal Homsky form:
-E  ->  E \S5  |  T \S7  |  \S2 \S6  |  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9
-F  ->  \S2 \S6  |  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9
-T  ->  T \S7  |  \S2 \S6  |  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9
-\S0  ->  E \S5  |  T \S7  |  \S2 \S6  |  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9
-\S1  ->  -
-\S2  ->  (
-\S3  ->  )
-\S4  ->  *
-\S5  ->  \S1 T
-\S6  ->  E \S3
-\S7  ->  \S4 F
+Recognized nonterms: E, T, F, D, A, C, B, Q, W
+Recognized terms: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, -, *, (, )
+
+Parsed rules: 
+A  ->  \eps
+B  ->  Q W E A  |  A A  |  Q W  |  B C C
+C  ->  A A  |  A A A  |  A A A B B B  |  B
+D  ->  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9  |  0 0
+E  ->  E - - T  |  T  |  * *
+F  ->  ( E )  |  D
+Q  ->  W W  |  \eps
+T  ->  T * * F  |  F  |  * *
+W  ->  \eps
+
+Delete epsilon - products
+B  ->  E  |  \eps  |  B C C
+C  ->  \eps  |  B B B  |  B
+D  ->  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9  |  0 0
+E  ->  E - - T  |  T  |  * *
+F  ->  ( E )  |  D
+T  ->  T * * F  |  F  |  * *
+
+Remove double recursion
+B  ->  E \S1  |  \eps \S1  |  E C C \S1  |  C C \S1
+C  ->  \eps \S2  |  E \S1 B B \S2  |  \eps \S1 B B \S2  |  E C C \S1 B B \S2  |  E \S1 \S2  |  \eps \S1 \S2  |  E C C \S1 \S2
+D  ->  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9  |  0 0
+E  ->  T - - T \S3  |  * * - - T \S3  |  T \S3  |  * * \S3
+F  ->  ( E )  |  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9  |  0 0
+T  ->  ( E ) * * F \S4  |  0 * * F \S4  |  1 * * F \S4  |  2 * * F \S4  |  3 * * F \S4  |  4 * * F \S4  |  5 * * F \S4  |  6 * * F \S4  |  7 * * F \S4  |  8 * * F \S4  |  9 * * F \S4  |  0 0 * * F \S4  |  * * * * F \S4  |  ( E ) \S4  |  0 \S4  |  1 \S4  |  2 \S4  |  3 \S4  |  4 \S4  |  5 \S4  |  6 \S4  |  7 \S4  |  8 \S4  |  9 \S4  |  0 0 \S4  |  * * \S4
+\S1  ->  \eps  |  \eps \S2 C C C \S1  |  ( E ) * * F \S4 - - T \S3 \S1 B B \S2 C C C \S1  |  0 * * F \S4 - - T \S3 \S1 B B \S2 C C C \S1  |  1 * * F \S4 - - T \S3 \S1 B B \S2 C C C \S1  |  2 * * F \S4 - - T \S3 \S1 B B \S2 C C C \S1  |  3 * * F \S4 - - T \S3 \S1 B B \S2 C C C \S1  |  4 * * F \S4 - - T \S3 \S1 B B \S2 C C C \S1  |  5 * * F \S4 - - T \S3 \S1 B B \S2 C C C \S1  |  6 * * F \S4 - - T \S3 \S1 B B \S2 C C C \S1  |  7 * * F \S4 - - T \S3 \S1 B B \S2 C C C \S1  |  8 * * F \S4 - - T \S3 \S1 B B \S2 C C C \S1  |  9 * * F \S4 - - T \S3 \S1 B B \S2 C C C \S1  |  0 0 * * F \S4 - - T \S3 \S1 B B \S2 C C C \S1  |  * * * * F \S4 - - T \S3 \S1 B B \S2 C C C \S1  |  ( E ) \S4 - - T \S3 \S1 B B \S2 C C C \S1  |  0 \S4 - - T \S3 \S1 B B \S2 C C C \S1  |  1 \S4 - - T \S3 \S1 B B \S2 C C C \S1  |  2 \S4 - - T \S3 \S1 B B \S2 C C C \S1  |  3 \S4 - - T \S3 \S1 B B \S2 C C C \S1  |  4 \S4 - - T \S3 \S1 B B \S2 C C C \S1  |  5 \S4 - - T \S3 \S1 B B \S2 C C C \S1  |  6 \S4 - - T \S3 \S1 B B \S2 C C C \S1  |  7 \S4 - - T \S3 \S1 B B \S2 C C C \S1  |  8 \S4 - - T \S3 \S1 B B \S2 C C C \S1  |  9 \S4 - - T \S3 \S1 B B \S2 C C C \S1  |  0 0 \S4 - - T \S3 \S1 B B \S2 C C C \S1  |  * * \S4 - - T \S3 \S1 B B \S2 C C C \S1  |  * * - - T \S3 \S1 B B \S2 C C C \S1  |  ( E ) * * F \S4 \S3 \S1 B B \S2 C C C \S1  |  0 * * F \S4 \S3 \S1 B B \S2 C C C \S1  |  1 * * F \S4 \S3 \S1 B B \S2 C C C \S1  |  2 * * F \S4 \S3 \S1 B B \S2 C C C \S1  |  3 * * F \S4 \S3 \S1 B B \S2 C C C \S1  |  4 * * F \S4 \S3 \S1 B B \S2 C C C \S1  |  5 * * F \S4 \S3 \S1 B B \S2 C C C \S1  |  6 * * F \S4 \S3 \S1 B B \S2 C C C \S1  |  7 * * F \S4 \S3 \S1 B B \S2 C C C \S1  |  8 * * F \S4 \S3 \S1 B B \S2 C C C \S1  |  9 * * F \S4 \S3 \S1 B B \S2 C C C \S1  |  0 0 * * F \S4 \S3 \S1 B B \S2 C C C \S1  |  * * * * F \S4 \S3 \S1 B B \S2 C C C \S1  |  ( E ) \S4 \S3 \S1 B B \S2 C C C \S1  |  0 \S4 \S3 \S1 B B \S2 C C C \S1  |  1 \S4 \S3 \S1 B B \S2 C C C \S1  |  2 \S4 \S3 \S1 B B \S2 C C C \S1  |  3 \S4 \S3 \S1 B B \S2 C C C \S1  |  4 \S4 \S3 \S1 B B \S2 C C C \S1  |  5 \S4 \S3 \S1 B B \S2 C C C \S1  |  6 \S4 \S3 \S1 B B \S2 C C C \S1  |  7 \S4 \S3 \S1 B B \S2 C C C \S1  |  8 \S4 \S3 \S1 B B \S2 C C C \S1  |  9 \S4 \S3 \S1 B B \S2 C C C \S1  |  0 0 \S4 \S3 \S1 B B \S2 C C C \S1  |  * * \S4 \S3 \S1 B B \S2 C C C \S1  |  * * \S3 \S1 B B \S2 C C C \S1  |  \eps \S1 B B \S2 C C C \S1  |  ( E ) * * F \S4 - - T \S3 C C \S1 B B \S2 C C C \S1  |  0 * * F \S4 - - T \S3 C C \S1 B B \S2 C C C \S1  |  1 * * F \S4 - - T \S3 C C \S1 B B \S2 C C C \S1  |  2 * * F \S4 - - T \S3 C C \S1 B B \S2 C C C \S1  |  3 * * F \S4 - - T \S3 C C \S1 B B \S2 C C C \S1  |  4 * * F \S4 - - T \S3 C C \S1 B B \S2 C C C \S1  |  5 * * F \S4 - - T \S3 C C \S1 B B \S2 C C C \S1  |  6 * * F \S4 - - T \S3 C C \S1 B B \S2 C C C \S1  |  7 * * F \S4 - - T \S3 C C \S1 B B \S2 C C C \S1  |  8 * * F \S4 - - T \S3 C C \S1 B B \S2 C C C \S1  |  9 * * F \S4 - - T \S3 C C \S1 B B \S2 C C C \S1  |  0 0 * * F \S4 - - T \S3 C C \S1 B B \S2 C C C \S1  |  * * * * F \S4 - - T \S3 C C \S1 B B \S2 C C C \S1  |  ( E ) \S4 - - T \S3 C C \S1 B B \S2 C C C \S1  |  0 \S4 - - T \S3 C C \S1 B B \S2 C C C \S1  |  1 \S4 - - T \S3 C C \S1 B B \S2 C C C \S1  |  2 \S4 - - T \S3 C C \S1 B B \S2 C C C \S1  |  3 \S4 - - T \S3 C C \S1 B B \S2 C C C \S1  |  4 \S4 - - T \S3 C C \S1 B B \S2 C C C \S1  |  5 \S4 - - T \S3 C C \S1 B B \S2 C C C \S1  |  6 \S4 - - T \S3 C C \S1 B B \S2 C C C \S1  |  7 \S4 - - T \S3 C C \S1 B B \S2 C C C \S1  |  8 \S4 - - T \S3 C C \S1 B B \S2 C C C \S1  |  9 \S4 - - T \S3 C C \S1 B B \S2 C C C \S1  |  0 0 \S4 - - T \S3 C C \S1 B B \S2 C C C \S1  |  * * \S4 - - T \S3 C C \S1 B B \S2 C C C \S1  |  * * - - T \S3 C C \S1 B B \S2 C C C \S1  |  ( E ) * * F \S4 \S3 C C \S1 B B \S2 C C C \S1  |  0 * * F \S4 \S3 C C \S1 B B \S2 C C C \S1  |  1 * * F \S4 \S3 C C \S1 B B \S2 C C C \S1  |  2 * * F \S4 \S3 C C \S1 B B \S2 C C C \S1  |  3 * * F \S4 \S3 C C \S1 B B \S2 C C C \S1  |  4 * * F \S4 \S3 C C \S1 B B \S2 C C C \S1  |  5 * * F \S4 \S3 C C \S1 B B \S2 C C C \S1  |  6 * * F \S4 \S3 C C \S1 B B \S2 C C C \S1  |  7 * * F \S4 \S3 C C \S1 B B \S2 C C C \S1  |  8 * * F \S4 \S3 C C \S1 B B \S2 C C C \S1  |  9 * * F \S4 \S3 C C \S1 B B \S2 C C C \S1  |  0 0 * * F \S4 \S3 C C \S1 B B \S2 C C C \S1  |  * * * * F \S4 \S3 C C \S1 B B \S2 C C C \S1  |  ( E ) \S4 \S3 C C \S1 B B \S2 C C C \S1  |  0 \S4 \S3 C C \S1 B B \S2 C C C \S1  |  1 \S4 \S3 C C \S1 B B \S2 C C C \S1  |  2 \S4 \S3 C C \S1 B B \S2 C C C \S1  |  3 \S4 \S3 C C \S1 B B \S2 C C C \S1  |  4 \S4 \S3 C C \S1 B B \S2 C C C \S1  |  5 \S4 \S3 C C \S1 B B \S2 C C C \S1  |  6 \S4 \S3 C C \S1 B B \S2 C C C \S1  |  7 \S4 \S3 C C \S1 B B \S2 C C C \S1  |  8 \S4 \S3 C C \S1 B B \S2 C C C \S1  |  9 \S4 \S3 C C \S1 B B \S2 C C C \S1  |  0 0 \S4 \S3 C C \S1 B B \S2 C C C \S1  |  * * \S4 \S3 C C \S1 B B \S2 C C C \S1  |  * * \S3 C C \S1 B B \S2 C C C \S1  |  ( E ) * * F \S4 - - T \S3 \S1 \S2 C C C \S1  |  0 * * F \S4 - - T \S3 \S1 \S2 C C C \S1  |  1 * * F \S4 - - T \S3 \S1 \S2 C C C \S1  |  2 * * F \S4 - - T \S3 \S1 \S2 C C C \S1  |  3 * * F \S4 - - T \S3 \S1 \S2 C C C \S1  |  4 * * F \S4 - - T \S3 \S1 \S2 C C C \S1  |  5 * * F \S4 - - T \S3 \S1 \S2 C C C \S1  |  6 * * F \S4 - - T \S3 \S1 \S2 C C C \S1  |  7 * * F \S4 - - T \S3 \S1 \S2 C C C \S1  |  8 * * F \S4 - - T \S3 \S1 \S2 C C C \S1  |  9 * * F \S4 - - T \S3 \S1 \S2 C C C \S1  |  0 0 * * F \S4 - - T \S3 \S1 \S2 C C C \S1  |  * * * * F \S4 - - T \S3 \S1 \S2 C C C \S1  |  ( E ) \S4 - - T \S3 \S1 \S2 C C C \S1  |  0 \S4 - - T \S3 \S1 \S2 C C C \S1  |  1 \S4 - - T \S3 \S1 \S2 C C C \S1  |  2 \S4 - - T \S3 \S1 \S2 C C C \S1  |  3 \S4 - - T \S3 \S1 \S2 C C C \S1  |  4 \S4 - - T \S3 \S1 \S2 C C C \S1  |  5 \S4 - - T \S3 \S1 \S2 C C C \S1  |  6 \S4 - - T \S3 \S1 \S2 C C C \S1  |  7 \S4 - - T \S3 \S1 \S2 C C C \S1  |  8 \S4 - - T \S3 \S1 \S2 C C C \S1  |  9 \S4 - - T \S3 \S1 \S2 C C C \S1  |  0 0 \S4 - - T \S3 \S1 \S2 C C C \S1  |  * * \S4 - - T \S3 \S1 \S2 C C C \S1  |  * * - - T \S3 \S1 \S2 C C C \S1  |  ( E ) * * F \S4 \S3 \S1 \S2 C C C \S1  |  0 * * F \S4 \S3 \S1 \S2 C C C \S1  |  1 * * F \S4 \S3 \S1 \S2 C C C \S1  |  2 * * F \S4 \S3 \S1 \S2 C C C \S1  |  3 * * F \S4 \S3 \S1 \S2 C C C \S1  |  4 * * F \S4 \S3 \S1 \S2 C C C \S1  |  5 * * F \S4 \S3 \S1 \S2 C C C \S1  |  6 * * F \S4 \S3 \S1 \S2 C C C \S1  |  7 * * F \S4 \S3 \S1 \S2 C C C \S1  |  8 * * F \S4 \S3 \S1 \S2 C C C \S1  |  9 * * F \S4 \S3 \S1 \S2 C C C \S1  |  0 0 * * F \S4 \S3 \S1 \S2 C C C \S1  |  * * * * F \S4 \S3 \S1 \S2 C C C \S1  |  ( E ) \S4 \S3 \S1 \S2 C C C \S1  |  0 \S4 \S3 \S1 \S2 C C C \S1  |  1 \S4 \S3 \S1 \S2 C C C \S1  |  2 \S4 \S3 \S1 \S2 C C C \S1  |  3 \S4 \S3 \S1 \S2 C C C \S1  |  4 \S4 \S3 \S1 \S2 C C C \S1  |  5 \S4 \S3 \S1 \S2 C C C \S1  |  6 \S4 \S3 \S1 \S2 C C C \S1  |  7 \S4 \S3 \S1 \S2 C C C \S1  |  8 \S4 \S3 \S1 \S2 C C C \S1  |  9 \S4 \S3 \S1 \S2 C C C \S1  |  0 0 \S4 \S3 \S1 \S2 C C C \S1  |  * * \S4 \S3 \S1 \S2 C C C \S1  |  * * \S3 \S1 \S2 C C C \S1  |  \eps \S1 \S2 C C C \S1  |  ( E ) * * F \S4 - - T \S3 C C \S1 \S2 C C C \S1  |  0 * * F \S4 - - T \S3 C C \S1 \S2 C C C \S1  |  1 * * F \S4 - - T \S3 C C \S1 \S2 C C C \S1  |  2 * * F \S4 - - T \S3 C C \S1 \S2 C C C \S1  |  3 * * F \S4 - - T \S3 C C \S1 \S2 C C C \S1  |  4 * * F \S4 - - T \S3 C C \S1 \S2 C C C \S1  |  5 * * F \S4 - - T \S3 C C \S1 \S2 C C C \S1  |  6 * * F \S4 - - T \S3 C C \S1 \S2 C C C \S1  |  7 * * F \S4 - - T \S3 C C \S1 \S2 C C C \S1  |  8 * * F \S4 - - T \S3 C C \S1 \S2 C C C \S1  |  9 * * F \S4 - - T \S3 C C \S1 \S2 C C C \S1  |  0 0 * * F \S4 - - T \S3 C C \S1 \S2 C C C \S1  |  * * * * F \S4 - - T \S3 C C \S1 \S2 C C C \S1  |  ( E ) \S4 - - T \S3 C C \S1 \S2 C C C \S1  |  0 \S4 - - T \S3 C C \S1 \S2 C C C \S1  |  1 \S4 - - T \S3 C C \S1 \S2 C C C \S1  |  2 \S4 - - T \S3 C C \S1 \S2 C C C \S1  |  3 \S4 - - T \S3 C C \S1 \S2 C C C \S1  |  4 \S4 - - T \S3 C C \S1 \S2 C C C \S1  |  5 \S4 - - T \S3 C C \S1 \S2 C C C \S1  |  6 \S4 - - T \S3 C C \S1 \S2 C C C \S1  |  7 \S4 - - T \S3 C C \S1 \S2 C C C \S1  |  8 \S4 - - T \S3 C C \S1 \S2 C C C \S1  |  9 \S4 - - T \S3 C C \S1 \S2 C C C \S1  |  0 0 \S4 - - T \S3 C C \S1 \S2 C C C \S1  |  * * \S4 - - T \S3 C C \S1 \S2 C C C \S1  |  * * - - T \S3 C C \S1 \S2 C C C \S1  |  ( E ) * * F \S4 \S3 C C \S1 \S2 C C C \S1  |  0 * * F \S4 \S3 C C \S1 \S2 C C C \S1  |  1 * * F \S4 \S3 C C \S1 \S2 C C C \S1  |  2 * * F \S4 \S3 C C \S1 \S2 C C C \S1  |  3 * * F \S4 \S3 C C \S1 \S2 C C C \S1  |  4 * * F \S4 \S3 C C \S1 \S2 C C C \S1  |  5 * * F \S4 \S3 C C \S1 \S2 C C C \S1  |  6 * * F \S4 \S3 C C \S1 \S2 C C C \S1  |  7 * * F \S4 \S3 C C \S1 \S2 C C C \S1  |  8 * * F \S4 \S3 C C \S1 \S2 C C C \S1  |  9 * * F \S4 \S3 C C \S1 \S2 C C C \S1  |  0 0 * * F \S4 \S3 C C \S1 \S2 C C C \S1  |  * * * * F \S4 \S3 C C \S1 \S2 C C C \S1  |  ( E ) \S4 \S3 C C \S1 \S2 C C C \S1  |  0 \S4 \S3 C C \S1 \S2 C C C \S1  |  1 \S4 \S3 C C \S1 \S2 C C C \S1  |  2 \S4 \S3 C C \S1 \S2 C C C \S1  |  3 \S4 \S3 C C \S1 \S2 C C C \S1  |  4 \S4 \S3 C C \S1 \S2 C C C \S1  |  5 \S4 \S3 C C \S1 \S2 C C C \S1  |  6 \S4 \S3 C C \S1 \S2 C C C \S1  |  7 \S4 \S3 C C \S1 \S2 C C C \S1  |  8 \S4 \S3 C C \S1 \S2 C C C \S1  |  9 \S4 \S3 C C \S1 \S2 C C C \S1  |  0 0 \S4 \S3 C C \S1 \S2 C C C \S1  |  * * \S4 \S3 C C \S1 \S2 C C C \S1  |  * * \S3 C C \S1 \S2 C C C \S1
+\S2  ->  \eps  |  \eps \S2 \S1 B B \S2  |  ( E ) * * F \S4 - - T \S3 \S1 B B \S2 \S1 B B \S2  |  0 * * F \S4 - - T \S3 \S1 B B \S2 \S1 B B \S2  |  1 * * F \S4 - - T \S3 \S1 B B \S2 \S1 B B \S2  |  2 * * F \S4 - - T \S3 \S1 B B \S2 \S1 B B \S2  |  3 * * F \S4 - - T \S3 \S1 B B \S2 \S1 B B \S2  |  4 * * F \S4 - - T \S3 \S1 B B \S2 \S1 B B \S2  |  5 * * F \S4 - - T \S3 \S1 B B \S2 \S1 B B \S2  |  6 * * F \S4 - - T \S3 \S1 B B \S2 \S1 B B \S2  |  7 * * F \S4 - - T \S3 \S1 B B \S2 \S1 B B \S2  |  8 * * F \S4 - - T \S3 \S1 B B \S2 \S1 B B \S2  |  9 * * F \S4 - - T \S3 \S1 B B \S2 \S1 B B \S2  |  0 0 * * F \S4 - - T \S3 \S1 B B \S2 \S1 B B \S2  |  * * * * F \S4 - - T \S3 \S1 B B \S2 \S1 B B \S2  |  ( E ) \S4 - - T \S3 \S1 B B \S2 \S1 B B \S2  |  0 \S4 - - T \S3 \S1 B B \S2 \S1 B B \S2  |  1 \S4 - - T \S3 \S1 B B \S2 \S1 B B \S2  |  2 \S4 - - T \S3 \S1 B B \S2 \S1 B B \S2  |  3 \S4 - - T \S3 \S1 B B \S2 \S1 B B \S2  |  4 \S4 - - T \S3 \S1 B B \S2 \S1 B B \S2  |  5 \S4 - - T \S3 \S1 B B \S2 \S1 B B \S2  |  6 \S4 - - T \S3 \S1 B B \S2 \S1 B B \S2  |  7 \S4 - - T \S3 \S1 B B \S2 \S1 B B \S2  |  8 \S4 - - T \S3 \S1 B B \S2 \S1 B B \S2  |  9 \S4 - - T \S3 \S1 B B \S2 \S1 B B \S2  |  0 0 \S4 - - T \S3 \S1 B B \S2 \S1 B B \S2  |  * * \S4 - - T \S3 \S1 B B \S2 \S1 B B \S2  |  * * - - T \S3 \S1 B B \S2 \S1 B B \S2  |  ( E ) * * F \S4 \S3 \S1 B B \S2 \S1 B B \S2  |  0 * * F \S4 \S3 \S1 B B \S2 \S1 B B \S2  |  1 * * F \S4 \S3 \S1 B B \S2 \S1 B B \S2  |  2 * * F \S4 \S3 \S1 B B \S2 \S1 B B \S2  |  3 * * F \S4 \S3 \S1 B B \S2 \S1 B B \S2  |  4 * * F \S4 \S3 \S1 B B \S2 \S1 B B \S2  |  5 * * F \S4 \S3 \S1 B B \S2 \S1 B B \S2  |  6 * * F \S4 \S3 \S1 B B \S2 \S1 B B \S2  |  7 * * F \S4 \S3 \S1 B B \S2 \S1 B B \S2  |  8 * * F \S4 \S3 \S1 B B \S2 \S1 B B \S2  |  9 * * F \S4 \S3 \S1 B B \S2 \S1 B B \S2  |  0 0 * * F \S4 \S3 \S1 B B \S2 \S1 B B \S2  |  * * * * F \S4 \S3 \S1 B B \S2 \S1 B B \S2  |  ( E ) \S4 \S3 \S1 B B \S2 \S1 B B \S2  |  0 \S4 \S3 \S1 B B \S2 \S1 B B \S2  |  1 \S4 \S3 \S1 B B \S2 \S1 B B \S2  |  2 \S4 \S3 \S1 B B \S2 \S1 B B \S2  |  3 \S4 \S3 \S1 B B \S2 \S1 B B \S2  |  4 \S4 \S3 \S1 B B \S2 \S1 B B \S2  |  5 \S4 \S3 \S1 B B \S2 \S1 B B \S2  |  6 \S4 \S3 \S1 B B \S2 \S1 B B \S2  |  7 \S4 \S3 \S1 B B \S2 \S1 B B \S2  |  8 \S4 \S3 \S1 B B \S2 \S1 B B \S2  |  9 \S4 \S3 \S1 B B \S2 \S1 B B \S2  |  0 0 \S4 \S3 \S1 B B \S2 \S1 B B \S2  |  * * \S4 \S3 \S1 B B \S2 \S1 B B \S2  |  * * \S3 \S1 B B \S2 \S1 B B \S2  |  \eps \S1 B B \S2 \S1 B B \S2  |  ( E ) * * F \S4 - - T \S3 C C \S1 B B \S2 \S1 B B \S2  |  0 * * F \S4 - - T \S3 C C \S1 B B \S2 \S1 B B \S2  |  1 * * F \S4 - - T \S3 C C \S1 B B \S2 \S1 B B \S2  |  2 * * F \S4 - - T \S3 C C \S1 B B \S2 \S1 B B \S2  |  3 * * F \S4 - - T \S3 C C \S1 B B \S2 \S1 B B \S2  |  4 * * F \S4 - - T \S3 C C \S1 B B \S2 \S1 B B \S2  |  5 * * F \S4 - - T \S3 C C \S1 B B \S2 \S1 B B \S2  |  6 * * F \S4 - - T \S3 C C \S1 B B \S2 \S1 B B \S2  |  7 * * F \S4 - - T \S3 C C \S1 B B \S2 \S1 B B \S2  |  8 * * F \S4 - - T \S3 C C \S1 B B \S2 \S1 B B \S2  |  9 * * F \S4 - - T \S3 C C \S1 B B \S2 \S1 B B \S2  |  0 0 * * F \S4 - - T \S3 C C \S1 B B \S2 \S1 B B \S2  |  * * * * F \S4 - - T \S3 C C \S1 B B \S2 \S1 B B \S2  |  ( E ) \S4 - - T \S3 C C \S1 B B \S2 \S1 B B \S2  |  0 \S4 - - T \S3 C C \S1 B B \S2 \S1 B B \S2  |  1 \S4 - - T \S3 C C \S1 B B \S2 \S1 B B \S2  |  2 \S4 - - T \S3 C C \S1 B B \S2 \S1 B B \S2  |  3 \S4 - - T \S3 C C \S1 B B \S2 \S1 B B \S2  |  4 \S4 - - T \S3 C C \S1 B B \S2 \S1 B B \S2  |  5 \S4 - - T \S3 C C \S1 B B \S2 \S1 B B \S2  |  6 \S4 - - T \S3 C C \S1 B B \S2 \S1 B B \S2  |  7 \S4 - - T \S3 C C \S1 B B \S2 \S1 B B \S2  |  8 \S4 - - T \S3 C C \S1 B B \S2 \S1 B B \S2  |  9 \S4 - - T \S3 C C \S1 B B \S2 \S1 B B \S2  |  0 0 \S4 - - T \S3 C C \S1 B B \S2 \S1 B B \S2  |  * * \S4 - - T \S3 C C \S1 B B \S2 \S1 B B \S2  |  * * - - T \S3 C C \S1 B B \S2 \S1 B B \S2  |  ( E ) * * F \S4 \S3 C C \S1 B B \S2 \S1 B B \S2  |  0 * * F \S4 \S3 C C \S1 B B \S2 \S1 B B \S2  |  1 * * F \S4 \S3 C C \S1 B B \S2 \S1 B B \S2  |  2 * * F \S4 \S3 C C \S1 B B \S2 \S1 B B \S2  |  3 * * F \S4 \S3 C C \S1 B B \S2 \S1 B B \S2  |  4 * * F \S4 \S3 C C \S1 B B \S2 \S1 B B \S2  |  5 * * F \S4 \S3 C C \S1 B B \S2 \S1 B B \S2  |  6 * * F \S4 \S3 C C \S1 B B \S2 \S1 B B \S2  |  7 * * F \S4 \S3 C C \S1 B B \S2 \S1 B B \S2  |  8 * * F \S4 \S3 C C \S1 B B \S2 \S1 B B \S2  |  9 * * F \S4 \S3 C C \S1 B B \S2 \S1 B B \S2  |  0 0 * * F \S4 \S3 C C \S1 B B \S2 \S1 B B \S2  |  * * * * F \S4 \S3 C C \S1 B B \S2 \S1 B B \S2  |  ( E ) \S4 \S3 C C \S1 B B \S2 \S1 B B \S2  |  0 \S4 \S3 C C \S1 B B \S2 \S1 B B \S2  |  1 \S4 \S3 C C \S1 B B \S2 \S1 B B \S2  |  2 \S4 \S3 C C \S1 B B \S2 \S1 B B \S2  |  3 \S4 \S3 C C \S1 B B \S2 \S1 B B \S2  |  4 \S4 \S3 C C \S1 B B \S2 \S1 B B \S2  |  5 \S4 \S3 C C \S1 B B \S2 \S1 B B \S2  |  6 \S4 \S3 C C \S1 B B \S2 \S1 B B \S2  |  7 \S4 \S3 C C \S1 B B \S2 \S1 B B \S2  |  8 \S4 \S3 C C \S1 B B \S2 \S1 B B \S2  |  9 \S4 \S3 C C \S1 B B \S2 \S1 B B \S2  |  0 0 \S4 \S3 C C \S1 B B \S2 \S1 B B \S2  |  * * \S4 \S3 C C \S1 B B \S2 \S1 B B \S2  |  * * \S3 C C \S1 B B \S2 \S1 B B \S2  |  ( E ) * * F \S4 - - T \S3 \S1 \S2 \S1 B B \S2  |  0 * * F \S4 - - T \S3 \S1 \S2 \S1 B B \S2  |  1 * * F \S4 - - T \S3 \S1 \S2 \S1 B B \S2  |  2 * * F \S4 - - T \S3 \S1 \S2 \S1 B B \S2  |  3 * * F \S4 - - T \S3 \S1 \S2 \S1 B B \S2  |  4 * * F \S4 - - T \S3 \S1 \S2 \S1 B B \S2  |  5 * * F \S4 - - T \S3 \S1 \S2 \S1 B B \S2  |  6 * * F \S4 - - T \S3 \S1 \S2 \S1 B B \S2  |  7 * * F \S4 - - T \S3 \S1 \S2 \S1 B B \S2  |  8 * * F \S4 - - T \S3 \S1 \S2 \S1 B B \S2  |  9 * * F \S4 - - T \S3 \S1 \S2 \S1 B B \S2  |  0 0 * * F \S4 - - T \S3 \S1 \S2 \S1 B B \S2  |  * * * * F \S4 - - T \S3 \S1 \S2 \S1 B B \S2  |  ( E ) \S4 - - T \S3 \S1 \S2 \S1 B B \S2  |  0 \S4 - - T \S3 \S1 \S2 \S1 B B \S2  |  1 \S4 - - T \S3 \S1 \S2 \S1 B B \S2  |  2 \S4 - - T \S3 \S1 \S2 \S1 B B \S2  |  3 \S4 - - T \S3 \S1 \S2 \S1 B B \S2  |  4 \S4 - - T \S3 \S1 \S2 \S1 B B \S2  |  5 \S4 - - T \S3 \S1 \S2 \S1 B B \S2  |  6 \S4 - - T \S3 \S1 \S2 \S1 B B \S2  |  7 \S4 - - T \S3 \S1 \S2 \S1 B B \S2  |  8 \S4 - - T \S3 \S1 \S2 \S1 B B \S2  |  9 \S4 - - T \S3 \S1 \S2 \S1 B B \S2  |  0 0 \S4 - - T \S3 \S1 \S2 \S1 B B \S2  |  * * \S4 - - T \S3 \S1 \S2 \S1 B B \S2  |  * * - - T \S3 \S1 \S2 \S1 B B \S2  |  ( E ) * * F \S4 \S3 \S1 \S2 \S1 B B \S2  |  0 * * F \S4 \S3 \S1 \S2 \S1 B B \S2  |  1 * * F \S4 \S3 \S1 \S2 \S1 B B \S2  |  2 * * F \S4 \S3 \S1 \S2 \S1 B B \S2  |  3 * * F \S4 \S3 \S1 \S2 \S1 B B \S2  |  4 * * F \S4 \S3 \S1 \S2 \S1 B B \S2  |  5 * * F \S4 \S3 \S1 \S2 \S1 B B \S2  |  6 * * F \S4 \S3 \S1 \S2 \S1 B B \S2  |  7 * * F \S4 \S3 \S1 \S2 \S1 B B \S2  |  8 * * F \S4 \S3 \S1 \S2 \S1 B B \S2  |  9 * * F \S4 \S3 \S1 \S2 \S1 B B \S2  |  0 0 * * F \S4 \S3 \S1 \S2 \S1 B B \S2  |  * * * * F \S4 \S3 \S1 \S2 \S1 B B \S2  |  ( E ) \S4 \S3 \S1 \S2 \S1 B B \S2  |  0 \S4 \S3 \S1 \S2 \S1 B B \S2  |  1 \S4 \S3 \S1 \S2 \S1 B B \S2  |  2 \S4 \S3 \S1 \S2 \S1 B B \S2  |  3 \S4 \S3 \S1 \S2 \S1 B B \S2  |  4 \S4 \S3 \S1 \S2 \S1 B B \S2  |  5 \S4 \S3 \S1 \S2 \S1 B B \S2  |  6 \S4 \S3 \S1 \S2 \S1 B B \S2  |  7 \S4 \S3 \S1 \S2 \S1 B B \S2  |  8 \S4 \S3 \S1 \S2 \S1 B B \S2  |  9 \S4 \S3 \S1 \S2 \S1 B B \S2  |  0 0 \S4 \S3 \S1 \S2 \S1 B B \S2  |  * * \S4 \S3 \S1 \S2 \S1 B B \S2  |  * * \S3 \S1 \S2 \S1 B B \S2  |  \eps \S1 \S2 \S1 B B \S2  |  ( E ) * * F \S4 - - T \S3 C C \S1 \S2 \S1 B B \S2  |  0 * * F \S4 - - T \S3 C C \S1 \S2 \S1 B B \S2  |  1 * * F \S4 - - T \S3 C C \S1 \S2 \S1 B B \S2  |  2 * * F \S4 - - T \S3 C C \S1 \S2 \S1 B B \S2  |  3 * * F \S4 - - T \S3 C C \S1 \S2 \S1 B B \S2  |  4 * * F \S4 - - T \S3 C C \S1 \S2 \S1 B B \S2  |  5 * * F \S4 - - T \S3 C C \S1 \S2 \S1 B B \S2  |  6 * * F \S4 - - T \S3 C C \S1 \S2 \S1 B B \S2  |  7 * * F \S4 - - T \S3 C C \S1 \S2 \S1 B B \S2  |  8 * * F \S4 - - T \S3 C C \S1 \S2 \S1 B B \S2  |  9 * * F \S4 - - T \S3 C C \S1 \S2 \S1 B B \S2  |  0 0 * * F \S4 - - T \S3 C C \S1 \S2 \S1 B B \S2  |  * * * * F \S4 - - T \S3 C C \S1 \S2 \S1 B B \S2  |  ( E ) \S4 - - T \S3 C C \S1 \S2 \S1 B B \S2  |  0 \S4 - - T \S3 C C \S1 \S2 \S1 B B \S2  |  1 \S4 - - T \S3 C C \S1 \S2 \S1 B B \S2  |  2 \S4 - - T \S3 C C \S1 \S2 \S1 B B \S2  |  3 \S4 - - T \S3 C C \S1 \S2 \S1 B B \S2  |  4 \S4 - - T \S3 C C \S1 \S2 \S1 B B \S2  |  5 \S4 - - T \S3 C C \S1 \S2 \S1 B B \S2  |  6 \S4 - - T \S3 C C \S1 \S2 \S1 B B \S2  |  7 \S4 - - T \S3 C C \S1 \S2 \S1 B B \S2  |  8 \S4 - - T \S3 C C \S1 \S2 \S1 B B \S2  |  9 \S4 - - T \S3 C C \S1 \S2 \S1 B B \S2  |  0 0 \S4 - - T \S3 C C \S1 \S2 \S1 B B \S2  |  * * \S4 - - T \S3 C C \S1 \S2 \S1 B B \S2  |  * * - - T \S3 C C \S1 \S2 \S1 B B \S2  |  ( E ) * * F \S4 \S3 C C \S1 \S2 \S1 B B \S2  |  0 * * F \S4 \S3 C C \S1 \S2 \S1 B B \S2  |  1 * * F \S4 \S3 C C \S1 \S2 \S1 B B \S2  |  2 * * F \S4 \S3 C C \S1 \S2 \S1 B B \S2  |  3 * * F \S4 \S3 C C \S1 \S2 \S1 B B \S2  |  4 * * F \S4 \S3 C C \S1 \S2 \S1 B B \S2  |  5 * * F \S4 \S3 C C \S1 \S2 \S1 B B \S2  |  6 * * F \S4 \S3 C C \S1 \S2 \S1 B B \S2  |  7 * * F \S4 \S3 C C \S1 \S2 \S1 B B \S2  |  8 * * F \S4 \S3 C C \S1 \S2 \S1 B B \S2  |  9 * * F \S4 \S3 C C \S1 \S2 \S1 B B \S2  |  0 0 * * F \S4 \S3 C C \S1 \S2 \S1 B B \S2  |  * * * * F \S4 \S3 C C \S1 \S2 \S1 B B \S2  |  ( E ) \S4 \S3 C C \S1 \S2 \S1 B B \S2  |  0 \S4 \S3 C C \S1 \S2 \S1 B B \S2  |  1 \S4 \S3 C C \S1 \S2 \S1 B B \S2  |  2 \S4 \S3 C C \S1 \S2 \S1 B B \S2  |  3 \S4 \S3 C C \S1 \S2 \S1 B B \S2  |  4 \S4 \S3 C C \S1 \S2 \S1 B B \S2  |  5 \S4 \S3 C C \S1 \S2 \S1 B B \S2  |  6 \S4 \S3 C C \S1 \S2 \S1 B B \S2  |  7 \S4 \S3 C C \S1 \S2 \S1 B B \S2  |  8 \S4 \S3 C C \S1 \S2 \S1 B B \S2  |  9 \S4 \S3 C C \S1 \S2 \S1 B B \S2  |  0 0 \S4 \S3 C C \S1 \S2 \S1 B B \S2  |  * * \S4 \S3 C C \S1 \S2 \S1 B B \S2  |  * * \S3 C C \S1 \S2 \S1 B B \S2  |  \eps \S2 \S1 \S2  |  ( E ) * * F \S4 - - T \S3 \S1 B B \S2 \S1 \S2  |  0 * * F \S4 - - T \S3 \S1 B B \S2 \S1 \S2  |  1 * * F \S4 - - T \S3 \S1 B B \S2 \S1 \S2  |  2 * * F \S4 - - T \S3 \S1 B B \S2 \S1 \S2  |  3 * * F \S4 - - T \S3 \S1 B B \S2 \S1 \S2  |  4 * * F \S4 - - T \S3 \S1 B B \S2 \S1 \S2  |  5 * * F \S4 - - T \S3 \S1 B B \S2 \S1 \S2  |  6 * * F \S4 - - T \S3 \S1 B B \S2 \S1 \S2  |  7 * * F \S4 - - T \S3 \S1 B B \S2 \S1 \S2  |  8 * * F \S4 - - T \S3 \S1 B B \S2 \S1 \S2  |  9 * * F \S4 - - T \S3 \S1 B B \S2 \S1 \S2  |  0 0 * * F \S4 - - T \S3 \S1 B B \S2 \S1 \S2  |  * * * * F \S4 - - T \S3 \S1 B B \S2 \S1 \S2  |  ( E ) \S4 - - T \S3 \S1 B B \S2 \S1 \S2  |  0 \S4 - - T \S3 \S1 B B \S2 \S1 \S2  |  1 \S4 - - T \S3 \S1 B B \S2 \S1 \S2  |  2 \S4 - - T \S3 \S1 B B \S2 \S1 \S2  |  3 \S4 - - T \S3 \S1 B B \S2 \S1 \S2  |  4 \S4 - - T \S3 \S1 B B \S2 \S1 \S2  |  5 \S4 - - T \S3 \S1 B B \S2 \S1 \S2  |  6 \S4 - - T \S3 \S1 B B \S2 \S1 \S2  |  7 \S4 - - T \S3 \S1 B B \S2 \S1 \S2  |  8 \S4 - - T \S3 \S1 B B \S2 \S1 \S2  |  9 \S4 - - T \S3 \S1 B B \S2 \S1 \S2  |  0 0 \S4 - - T \S3 \S1 B B \S2 \S1 \S2  |  * * \S4 - - T \S3 \S1 B B \S2 \S1 \S2  |  * * - - T \S3 \S1 B B \S2 \S1 \S2  |  ( E ) * * F \S4 \S3 \S1 B B \S2 \S1 \S2  |  0 * * F \S4 \S3 \S1 B B \S2 \S1 \S2  |  1 * * F \S4 \S3 \S1 B B \S2 \S1 \S2  |  2 * * F \S4 \S3 \S1 B B \S2 \S1 \S2  |  3 * * F \S4 \S3 \S1 B B \S2 \S1 \S2  |  4 * * F \S4 \S3 \S1 B B \S2 \S1 \S2  |  5 * * F \S4 \S3 \S1 B B \S2 \S1 \S2  |  6 * * F \S4 \S3 \S1 B B \S2 \S1 \S2  |  7 * * F \S4 \S3 \S1 B B \S2 \S1 \S2  |  8 * * F \S4 \S3 \S1 B B \S2 \S1 \S2  |  9 * * F \S4 \S3 \S1 B B \S2 \S1 \S2  |  0 0 * * F \S4 \S3 \S1 B B \S2 \S1 \S2  |  * * * * F \S4 \S3 \S1 B B \S2 \S1 \S2  |  ( E ) \S4 \S3 \S1 B B \S2 \S1 \S2  |  0 \S4 \S3 \S1 B B \S2 \S1 \S2  |  1 \S4 \S3 \S1 B B \S2 \S1 \S2  |  2 \S4 \S3 \S1 B B \S2 \S1 \S2  |  3 \S4 \S3 \S1 B B \S2 \S1 \S2  |  4 \S4 \S3 \S1 B B \S2 \S1 \S2  |  5 \S4 \S3 \S1 B B \S2 \S1 \S2  |  6 \S4 \S3 \S1 B B \S2 \S1 \S2  |  7 \S4 \S3 \S1 B B \S2 \S1 \S2  |  8 \S4 \S3 \S1 B B \S2 \S1 \S2  |  9 \S4 \S3 \S1 B B \S2 \S1 \S2  |  0 0 \S4 \S3 \S1 B B \S2 \S1 \S2  |  * * \S4 \S3 \S1 B B \S2 \S1 \S2  |  * * \S3 \S1 B B \S2 \S1 \S2  |  \eps \S1 B B \S2 \S1 \S2  |  ( E ) * * F \S4 - - T \S3 C C \S1 B B \S2 \S1 \S2  |  0 * * F \S4 - - T \S3 C C \S1 B B \S2 \S1 \S2  |  1 * * F \S4 - - T \S3 C C \S1 B B \S2 \S1 \S2  |  2 * * F \S4 - - T \S3 C C \S1 B B \S2 \S1 \S2  |  3 * * F \S4 - - T \S3 C C \S1 B B \S2 \S1 \S2  |  4 * * F \S4 - - T \S3 C C \S1 B B \S2 \S1 \S2  |  5 * * F \S4 - - T \S3 C C \S1 B B \S2 \S1 \S2  |  6 * * F \S4 - - T \S3 C C \S1 B B \S2 \S1 \S2  |  7 * * F \S4 - - T \S3 C C \S1 B B \S2 \S1 \S2  |  8 * * F \S4 - - T \S3 C C \S1 B B \S2 \S1 \S2  |  9 * * F \S4 - - T \S3 C C \S1 B B \S2 \S1 \S2  |  0 0 * * F \S4 - - T \S3 C C \S1 B B \S2 \S1 \S2  |  * * * * F \S4 - - T \S3 C C \S1 B B \S2 \S1 \S2  |  ( E ) \S4 - - T \S3 C C \S1 B B \S2 \S1 \S2  |  0 \S4 - - T \S3 C C \S1 B B \S2 \S1 \S2  |  1 \S4 - - T \S3 C C \S1 B B \S2 \S1 \S2  |  2 \S4 - - T \S3 C C \S1 B B \S2 \S1 \S2  |  3 \S4 - - T \S3 C C \S1 B B \S2 \S1 \S2  |  4 \S4 - - T \S3 C C \S1 B B \S2 \S1 \S2  |  5 \S4 - - T \S3 C C \S1 B B \S2 \S1 \S2  |  6 \S4 - - T \S3 C C \S1 B B \S2 \S1 \S2  |  7 \S4 - - T \S3 C C \S1 B B \S2 \S1 \S2  |  8 \S4 - - T \S3 C C \S1 B B \S2 \S1 \S2  |  9 \S4 - - T \S3 C C \S1 B B \S2 \S1 \S2  |  0 0 \S4 - - T \S3 C C \S1 B B \S2 \S1 \S2  |  * * \S4 - - T \S3 C C \S1 B B \S2 \S1 \S2  |  * * - - T \S3 C C \S1 B B \S2 \S1 \S2  |  ( E ) * * F \S4 \S3 C C \S1 B B \S2 \S1 \S2  |  0 * * F \S4 \S3 C C \S1 B B \S2 \S1 \S2  |  1 * * F \S4 \S3 C C \S1 B B \S2 \S1 \S2  |  2 * * F \S4 \S3 C C \S1 B B \S2 \S1 \S2  |  3 * * F \S4 \S3 C C \S1 B B \S2 \S1 \S2  |  4 * * F \S4 \S3 C C \S1 B B \S2 \S1 \S2  |  5 * * F \S4 \S3 C C \S1 B B \S2 \S1 \S2  |  6 * * F \S4 \S3 C C \S1 B B \S2 \S1 \S2  |  7 * * F \S4 \S3 C C \S1 B B \S2 \S1 \S2  |  8 * * F \S4 \S3 C C \S1 B B \S2 \S1 \S2  |  9 * * F \S4 \S3 C C \S1 B B \S2 \S1 \S2  |  0 0 * * F \S4 \S3 C C \S1 B B \S2 \S1 \S2  |  * * * * F \S4 \S3 C C \S1 B B \S2 \S1 \S2  |  ( E ) \S4 \S3 C C \S1 B B \S2 \S1 \S2  |  0 \S4 \S3 C C \S1 B B \S2 \S1 \S2  |  1 \S4 \S3 C C \S1 B B \S2 \S1 \S2  |  2 \S4 \S3 C C \S1 B B \S2 \S1 \S2  |  3 \S4 \S3 C C \S1 B B \S2 \S1 \S2  |  4 \S4 \S3 C C \S1 B B \S2 \S1 \S2  |  5 \S4 \S3 C C \S1 B B \S2 \S1 \S2  |  6 \S4 \S3 C C \S1 B B \S2 \S1 \S2  |  7 \S4 \S3 C C \S1 B B \S2 \S1 \S2  |  8 \S4 \S3 C C \S1 B B \S2 \S1 \S2  |  9 \S4 \S3 C C \S1 B B \S2 \S1 \S2  |  0 0 \S4 \S3 C C \S1 B B \S2 \S1 \S2  |  * * \S4 \S3 C C \S1 B B \S2 \S1 \S2  |  * * \S3 C C \S1 B B \S2 \S1 \S2  |  ( E ) * * F \S4 - - T \S3 \S1 \S2 \S1 \S2  |  0 * * F \S4 - - T \S3 \S1 \S2 \S1 \S2  |  1 * * F \S4 - - T \S3 \S1 \S2 \S1 \S2  |  2 * * F \S4 - - T \S3 \S1 \S2 \S1 \S2  |  3 * * F \S4 - - T \S3 \S1 \S2 \S1 \S2  |  4 * * F \S4 - - T \S3 \S1 \S2 \S1 \S2  |  5 * * F \S4 - - T \S3 \S1 \S2 \S1 \S2  |  6 * * F \S4 - - T \S3 \S1 \S2 \S1 \S2  |  7 * * F \S4 - - T \S3 \S1 \S2 \S1 \S2  |  8 * * F \S4 - - T \S3 \S1 \S2 \S1 \S2  |  9 * * F \S4 - - T \S3 \S1 \S2 \S1 \S2  |  0 0 * * F \S4 - - T \S3 \S1 \S2 \S1 \S2  |  * * * * F \S4 - - T \S3 \S1 \S2 \S1 \S2  |  ( E ) \S4 - - T \S3 \S1 \S2 \S1 \S2  |  0 \S4 - - T \S3 \S1 \S2 \S1 \S2  |  1 \S4 - - T \S3 \S1 \S2 \S1 \S2  |  2 \S4 - - T \S3 \S1 \S2 \S1 \S2  |  3 \S4 - - T \S3 \S1 \S2 \S1 \S2  |  4 \S4 - - T \S3 \S1 \S2 \S1 \S2  |  5 \S4 - - T \S3 \S1 \S2 \S1 \S2  |  6 \S4 - - T \S3 \S1 \S2 \S1 \S2  |  7 \S4 - - T \S3 \S1 \S2 \S1 \S2  |  8 \S4 - - T \S3 \S1 \S2 \S1 \S2  |  9 \S4 - - T \S3 \S1 \S2 \S1 \S2  |  0 0 \S4 - - T \S3 \S1 \S2 \S1 \S2  |  * * \S4 - - T \S3 \S1 \S2 \S1 \S2  |  * * - - T \S3 \S1 \S2 \S1 \S2  |  ( E ) * * F \S4 \S3 \S1 \S2 \S1 \S2  |  0 * * F \S4 \S3 \S1 \S2 \S1 \S2  |  1 * * F \S4 \S3 \S1 \S2 \S1 \S2  |  2 * * F \S4 \S3 \S1 \S2 \S1 \S2  |  3 * * F \S4 \S3 \S1 \S2 \S1 \S2  |  4 * * F \S4 \S3 \S1 \S2 \S1 \S2  |  5 * * F \S4 \S3 \S1 \S2 \S1 \S2  |  6 * * F \S4 \S3 \S1 \S2 \S1 \S2  |  7 * * F \S4 \S3 \S1 \S2 \S1 \S2  |  8 * * F \S4 \S3 \S1 \S2 \S1 \S2  |  9 * * F \S4 \S3 \S1 \S2 \S1 \S2  |  0 0 * * F \S4 \S3 \S1 \S2 \S1 \S2  |  * * * * F \S4 \S3 \S1 \S2 \S1 \S2  |  ( E ) \S4 \S3 \S1 \S2 \S1 \S2  |  0 \S4 \S3 \S1 \S2 \S1 \S2  |  1 \S4 \S3 \S1 \S2 \S1 \S2  |  2 \S4 \S3 \S1 \S2 \S1 \S2  |  3 \S4 \S3 \S1 \S2 \S1 \S2  |  4 \S4 \S3 \S1 \S2 \S1 \S2  |  5 \S4 \S3 \S1 \S2 \S1 \S2  |  6 \S4 \S3 \S1 \S2 \S1 \S2  |  7 \S4 \S3 \S1 \S2 \S1 \S2  |  8 \S4 \S3 \S1 \S2 \S1 \S2  |  9 \S4 \S3 \S1 \S2 \S1 \S2  |  0 0 \S4 \S3 \S1 \S2 \S1 \S2  |  * * \S4 \S3 \S1 \S2 \S1 \S2  |  * * \S3 \S1 \S2 \S1 \S2  |  \eps \S1 \S2 \S1 \S2  |  ( E ) * * F \S4 - - T \S3 C C \S1 \S2 \S1 \S2  |  0 * * F \S4 - - T \S3 C C \S1 \S2 \S1 \S2  |  1 * * F \S4 - - T \S3 C C \S1 \S2 \S1 \S2  |  2 * * F \S4 - - T \S3 C C \S1 \S2 \S1 \S2  |  3 * * F \S4 - - T \S3 C C \S1 \S2 \S1 \S2  |  4 * * F \S4 - - T \S3 C C \S1 \S2 \S1 \S2  |  5 * * F \S4 - - T \S3 C C \S1 \S2 \S1 \S2  |  6 * * F \S4 - - T \S3 C C \S1 \S2 \S1 \S2  |  7 * * F \S4 - - T \S3 C C \S1 \S2 \S1 \S2  |  8 * * F \S4 - - T \S3 C C \S1 \S2 \S1 \S2  |  9 * * F \S4 - - T \S3 C C \S1 \S2 \S1 \S2  |  0 0 * * F \S4 - - T \S3 C C \S1 \S2 \S1 \S2  |  * * * * F \S4 - - T \S3 C C \S1 \S2 \S1 \S2  |  ( E ) \S4 - - T \S3 C C \S1 \S2 \S1 \S2  |  0 \S4 - - T \S3 C C \S1 \S2 \S1 \S2  |  1 \S4 - - T \S3 C C \S1 \S2 \S1 \S2  |  2 \S4 - - T \S3 C C \S1 \S2 \S1 \S2  |  3 \S4 - - T \S3 C C \S1 \S2 \S1 \S2  |  4 \S4 - - T \S3 C C \S1 \S2 \S1 \S2  |  5 \S4 - - T \S3 C C \S1 \S2 \S1 \S2  |  6 \S4 - - T \S3 C C \S1 \S2 \S1 \S2  |  7 \S4 - - T \S3 C C \S1 \S2 \S1 \S2  |  8 \S4 - - T \S3 C C \S1 \S2 \S1 \S2  |  9 \S4 - - T \S3 C C \S1 \S2 \S1 \S2  |  0 0 \S4 - - T \S3 C C \S1 \S2 \S1 \S2  |  * * \S4 - - T \S3 C C \S1 \S2 \S1 \S2  |  * * - - T \S3 C C \S1 \S2 \S1 \S2  |  ( E ) * * F \S4 \S3 C C \S1 \S2 \S1 \S2  |  0 * * F \S4 \S3 C C \S1 \S2 \S1 \S2  |  1 * * F \S4 \S3 C C \S1 \S2 \S1 \S2  |  2 * * F \S4 \S3 C C \S1 \S2 \S1 \S2  |  3 * * F \S4 \S3 C C \S1 \S2 \S1 \S2  |  4 * * F \S4 \S3 C C \S1 \S2 \S1 \S2  |  5 * * F \S4 \S3 C C \S1 \S2 \S1 \S2  |  6 * * F \S4 \S3 C C \S1 \S2 \S1 \S2  |  7 * * F \S4 \S3 C C \S1 \S2 \S1 \S2  |  8 * * F \S4 \S3 C C \S1 \S2 \S1 \S2  |  9 * * F \S4 \S3 C C \S1 \S2 \S1 \S2  |  0 0 * * F \S4 \S3 C C \S1 \S2 \S1 \S2  |  * * * * F \S4 \S3 C C \S1 \S2 \S1 \S2  |  ( E ) \S4 \S3 C C \S1 \S2 \S1 \S2  |  0 \S4 \S3 C C \S1 \S2 \S1 \S2  |  1 \S4 \S3 C C \S1 \S2 \S1 \S2  |  2 \S4 \S3 C C \S1 \S2 \S1 \S2  |  3 \S4 \S3 C C \S1 \S2 \S1 \S2  |  4 \S4 \S3 C C \S1 \S2 \S1 \S2  |  5 \S4 \S3 C C \S1 \S2 \S1 \S2  |  6 \S4 \S3 C C \S1 \S2 \S1 \S2  |  7 \S4 \S3 C C \S1 \S2 \S1 \S2  |  8 \S4 \S3 C C \S1 \S2 \S1 \S2  |  9 \S4 \S3 C C \S1 \S2 \S1 \S2  |  0 0 \S4 \S3 C C \S1 \S2 \S1 \S2  |  * * \S4 \S3 C C \S1 \S2 \S1 \S2  |  * * \S3 C C \S1 \S2 \S1 \S2
+\S3  ->  \eps  |  - - T - - T \S3
+\S4  ->  \eps  |  * * F * * F \S4
+
+Isolate biggest common terminals
+B  ->  E B'  |  \eps \S1  |  C C \S1
+B'  ->  \S1  |  C C \S1
+C  ->  \eps C'2  |  E C'
+C'  ->  C C''2  |  \S1 C''
+C''  ->  B B \S2  |  \S2
+C''2  ->  C C''2'
+C''2'  ->  \S1 C''2''
+C''2''  ->  B B \S2  |  \S2
+C'2  ->  \S1 C'2'  |  \S2
+C'2'  ->  B B \S2  |  \S2
+D  ->  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9  |  0 0
+E  ->  * E'2  |  T E'
+E'  ->  - - T \S3  |  \S3
+E'2  ->  * E'2'
+E'2'  ->  - - T \S3  |  \S3
+F  ->  ( E )  |  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9  |  0 0
+T  ->  * T'12  |  9 T'11  |  8 T'10  |  7 T'9  |  6 T'8  |  5 T'7  |  4 T'6  |  3 T'5  |  2 T'4  |  1 T'3  |  ( T'2  |  0 T'
+T'  ->  0 T''  |  * * F \S4  |  \S4
+T''  ->  * * F \S4  |  \S4
+T'10  ->  * * F \S4  |  \S4
+T'11  ->  * * F \S4  |  \S4
+T'12  ->  * T'12'
+T'12'  ->  * * F \S4  |  \S4
+T'2  ->  E T'2'
+T'2'  ->  ) T'2''
+T'2''  ->  * * F \S4  |  \S4
+T'3  ->  * * F \S4  |  \S4
+T'4  ->  * * F \S4  |  \S4
+T'5  ->  * * F \S4  |  \S4
+T'6  ->  * * F \S4  |  \S4
+T'7  ->  * * F \S4  |  \S4
+T'8  ->  * * F \S4  |  \S4
+T'9  ->  * * F \S4  |  \S4
+\S1  ->  \eps \S1'13  |  9 \S1'12  |  8 \S1'11  |  7 \S1'10  |  6 \S1'9  |  5 \S1'8  |  4 \S1'7  |  3 \S1'6  |  2 \S1'5  |  1 \S1'4  |  ( \S1'3  |  * \S1'2  |  0 \S1'  |  \eps
+\S1'  ->  \S4 \S1''3  |  * \S1''2  |  0 \S1''
+\S1''  ->  \S4 \S1'''2  |  * \S1'''
+\S1'''  ->  * \S1''''
+\S1''''  ->  F \S1'''''
+\S1'''''  ->  \S4 \S1''''''
+\S1''''''  ->  \S3 \S1'''''''2  |  - \S1'''''''
+\S1'''''''  ->  - \S1''''''''
+\S1''''''''  ->  T \S1'''''''''
+\S1'''''''''  ->  \S3 \S1''''''''''
+\S1''''''''''  ->  C \S1'''''''''''2  |  \S1 \S1'''''''''''
+\S1'''''''''''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'''''''''''2  ->  C \S1'''''''''''2'
+\S1'''''''''''2'  ->  \S1 \S1'''''''''''2''
+\S1'''''''''''2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'''''''2  ->  C \S1'''''''2'2  |  \S1 \S1'''''''2'
+\S1'''''''2'  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'''''''2'2  ->  C \S1'''''''2'2'
+\S1'''''''2'2'  ->  \S1 \S1'''''''2'2''
+\S1'''''''2'2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'''2  ->  \S3 \S1'''2'2  |  - \S1'''2'
+\S1'''2'  ->  - \S1'''2''
+\S1'''2''  ->  T \S1'''2'''
+\S1'''2'''  ->  \S3 \S1'''2''''
+\S1'''2''''  ->  C \S1'''2'''''2  |  \S1 \S1'''2'''''
+\S1'''2'''''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'''2'''''2  ->  C \S1'''2'''''2'
+\S1'''2'''''2'  ->  \S1 \S1'''2'''''2''
+\S1'''2'''''2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'''2'2  ->  C \S1'''2'2'2  |  \S1 \S1'''2'2'
+\S1'''2'2'  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'''2'2'2  ->  C \S1'''2'2'2'
+\S1'''2'2'2'  ->  \S1 \S1'''2'2'2''
+\S1'''2'2'2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1''2  ->  * \S1''2'
+\S1''2'  ->  F \S1''2''
+\S1''2''  ->  \S4 \S1''2'''
+\S1''2'''  ->  \S3 \S1''2''''2  |  - \S1''2''''
+\S1''2''''  ->  - \S1''2'''''
+\S1''2'''''  ->  T \S1''2''''''
+\S1''2''''''  ->  \S3 \S1''2'''''''
+\S1''2'''''''  ->  C \S1''2''''''''2  |  \S1 \S1''2''''''''
+\S1''2''''''''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1''2''''''''2  ->  C \S1''2''''''''2'
+\S1''2''''''''2'  ->  \S1 \S1''2''''''''2''
+\S1''2''''''''2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1''2''''2  ->  C \S1''2''''2'2  |  \S1 \S1''2''''2'
+\S1''2''''2'  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1''2''''2'2  ->  C \S1''2''''2'2'
+\S1''2''''2'2'  ->  \S1 \S1''2''''2'2''
+\S1''2''''2'2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1''3  ->  \S3 \S1''3'2  |  - \S1''3'
+\S1''3'  ->  - \S1''3''
+\S1''3''  ->  T \S1''3'''
+\S1''3'''  ->  \S3 \S1''3''''
+\S1''3''''  ->  C \S1''3'''''2  |  \S1 \S1''3'''''
+\S1''3'''''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1''3'''''2  ->  C \S1''3'''''2'
+\S1''3'''''2'  ->  \S1 \S1''3'''''2''
+\S1''3'''''2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1''3'2  ->  C \S1''3'2'2  |  \S1 \S1''3'2'
+\S1''3'2'  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1''3'2'2  ->  C \S1''3'2'2'
+\S1''3'2'2'  ->  \S1 \S1''3'2'2''
+\S1''3'2'2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'10  ->  \S4 \S1'10'2  |  * \S1'10'
+\S1'10'  ->  * \S1'10''
+\S1'10''  ->  F \S1'10'''
+\S1'10'''  ->  \S4 \S1'10''''
+\S1'10''''  ->  \S3 \S1'10'''''2  |  - \S1'10'''''
+\S1'10'''''  ->  - \S1'10''''''
+\S1'10''''''  ->  T \S1'10'''''''
+\S1'10'''''''  ->  \S3 \S1'10''''''''
+\S1'10''''''''  ->  C \S1'10'''''''''2  |  \S1 \S1'10'''''''''
+\S1'10'''''''''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'10'''''''''2  ->  C \S1'10'''''''''2'
+\S1'10'''''''''2'  ->  \S1 \S1'10'''''''''2''
+\S1'10'''''''''2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'10'''''2  ->  C \S1'10'''''2'2  |  \S1 \S1'10'''''2'
+\S1'10'''''2'  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'10'''''2'2  ->  C \S1'10'''''2'2'
+\S1'10'''''2'2'  ->  \S1 \S1'10'''''2'2''
+\S1'10'''''2'2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'10'2  ->  \S3 \S1'10'2'2  |  - \S1'10'2'
+\S1'10'2'  ->  - \S1'10'2''
+\S1'10'2''  ->  T \S1'10'2'''
+\S1'10'2'''  ->  \S3 \S1'10'2''''
+\S1'10'2''''  ->  C \S1'10'2'''''2  |  \S1 \S1'10'2'''''
+\S1'10'2'''''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'10'2'''''2  ->  C \S1'10'2'''''2'
+\S1'10'2'''''2'  ->  \S1 \S1'10'2'''''2''
+\S1'10'2'''''2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'10'2'2  ->  C \S1'10'2'2'2  |  \S1 \S1'10'2'2'
+\S1'10'2'2'  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'10'2'2'2  ->  C \S1'10'2'2'2'
+\S1'10'2'2'2'  ->  \S1 \S1'10'2'2'2''
+\S1'10'2'2'2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'11  ->  \S4 \S1'11'2  |  * \S1'11'
+\S1'11'  ->  * \S1'11''
+\S1'11''  ->  F \S1'11'''
+\S1'11'''  ->  \S4 \S1'11''''
+\S1'11''''  ->  \S3 \S1'11'''''2  |  - \S1'11'''''
+\S1'11'''''  ->  - \S1'11''''''
+\S1'11''''''  ->  T \S1'11'''''''
+\S1'11'''''''  ->  \S3 \S1'11''''''''
+\S1'11''''''''  ->  C \S1'11'''''''''2  |  \S1 \S1'11'''''''''
+\S1'11'''''''''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'11'''''''''2  ->  C \S1'11'''''''''2'
+\S1'11'''''''''2'  ->  \S1 \S1'11'''''''''2''
+\S1'11'''''''''2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'11'''''2  ->  C \S1'11'''''2'2  |  \S1 \S1'11'''''2'
+\S1'11'''''2'  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'11'''''2'2  ->  C \S1'11'''''2'2'
+\S1'11'''''2'2'  ->  \S1 \S1'11'''''2'2''
+\S1'11'''''2'2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'11'2  ->  \S3 \S1'11'2'2  |  - \S1'11'2'
+\S1'11'2'  ->  - \S1'11'2''
+\S1'11'2''  ->  T \S1'11'2'''
+\S1'11'2'''  ->  \S3 \S1'11'2''''
+\S1'11'2''''  ->  C \S1'11'2'''''2  |  \S1 \S1'11'2'''''
+\S1'11'2'''''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'11'2'''''2  ->  C \S1'11'2'''''2'
+\S1'11'2'''''2'  ->  \S1 \S1'11'2'''''2''
+\S1'11'2'''''2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'11'2'2  ->  C \S1'11'2'2'2  |  \S1 \S1'11'2'2'
+\S1'11'2'2'  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'11'2'2'2  ->  C \S1'11'2'2'2'
+\S1'11'2'2'2'  ->  \S1 \S1'11'2'2'2''
+\S1'11'2'2'2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'12  ->  \S4 \S1'12'2  |  * \S1'12'
+\S1'12'  ->  * \S1'12''
+\S1'12''  ->  F \S1'12'''
+\S1'12'''  ->  \S4 \S1'12''''
+\S1'12''''  ->  \S3 \S1'12'''''2  |  - \S1'12'''''
+\S1'12'''''  ->  - \S1'12''''''
+\S1'12''''''  ->  T \S1'12'''''''
+\S1'12'''''''  ->  \S3 \S1'12''''''''
+\S1'12''''''''  ->  C \S1'12'''''''''2  |  \S1 \S1'12'''''''''
+\S1'12'''''''''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'12'''''''''2  ->  C \S1'12'''''''''2'
+\S1'12'''''''''2'  ->  \S1 \S1'12'''''''''2''
+\S1'12'''''''''2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'12'''''2  ->  C \S1'12'''''2'2  |  \S1 \S1'12'''''2'
+\S1'12'''''2'  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'12'''''2'2  ->  C \S1'12'''''2'2'
+\S1'12'''''2'2'  ->  \S1 \S1'12'''''2'2''
+\S1'12'''''2'2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'12'2  ->  \S3 \S1'12'2'2  |  - \S1'12'2'
+\S1'12'2'  ->  - \S1'12'2''
+\S1'12'2''  ->  T \S1'12'2'''
+\S1'12'2'''  ->  \S3 \S1'12'2''''
+\S1'12'2''''  ->  C \S1'12'2'''''2  |  \S1 \S1'12'2'''''
+\S1'12'2'''''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'12'2'''''2  ->  C \S1'12'2'''''2'
+\S1'12'2'''''2'  ->  \S1 \S1'12'2'''''2''
+\S1'12'2'''''2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'12'2'2  ->  C \S1'12'2'2'2  |  \S1 \S1'12'2'2'
+\S1'12'2'2'  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'12'2'2'2  ->  C \S1'12'2'2'2'
+\S1'12'2'2'2'  ->  \S1 \S1'12'2'2'2''
+\S1'12'2'2'2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'13  ->  \S1 \S1'13'  |  \S2 C C C \S1
+\S1'13'  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'2  ->  * \S1'2'
+\S1'2'  ->  \S3 \S1'2''4  |  - \S1'2''3  |  \S4 \S1'2''2  |  * \S1'2''
+\S1'2''  ->  * \S1'2'''
+\S1'2'''  ->  F \S1'2''''
+\S1'2''''  ->  \S4 \S1'2'''''
+\S1'2'''''  ->  \S3 \S1'2''''''2  |  - \S1'2''''''
+\S1'2''''''  ->  - \S1'2'''''''
+\S1'2'''''''  ->  T \S1'2''''''''
+\S1'2''''''''  ->  \S3 \S1'2'''''''''
+\S1'2'''''''''  ->  C \S1'2''''''''''2  |  \S1 \S1'2''''''''''
+\S1'2''''''''''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'2''''''''''2  ->  C \S1'2''''''''''2'
+\S1'2''''''''''2'  ->  \S1 \S1'2''''''''''2''
+\S1'2''''''''''2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'2''''''2  ->  C \S1'2''''''2'2  |  \S1 \S1'2''''''2'
+\S1'2''''''2'  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'2''''''2'2  ->  C \S1'2''''''2'2'
+\S1'2''''''2'2'  ->  \S1 \S1'2''''''2'2''
+\S1'2''''''2'2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'2''2  ->  \S3 \S1'2''2'2  |  - \S1'2''2'
+\S1'2''2'  ->  - \S1'2''2''
+\S1'2''2''  ->  T \S1'2''2'''
+\S1'2''2'''  ->  \S3 \S1'2''2''''
+\S1'2''2''''  ->  C \S1'2''2'''''2  |  \S1 \S1'2''2'''''
+\S1'2''2'''''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'2''2'''''2  ->  C \S1'2''2'''''2'
+\S1'2''2'''''2'  ->  \S1 \S1'2''2'''''2''
+\S1'2''2'''''2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'2''2'2  ->  C \S1'2''2'2'2  |  \S1 \S1'2''2'2'
+\S1'2''2'2'  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'2''2'2'2  ->  C \S1'2''2'2'2'
+\S1'2''2'2'2'  ->  \S1 \S1'2''2'2'2''
+\S1'2''2'2'2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'2''3  ->  - \S1'2''3'
+\S1'2''3'  ->  T \S1'2''3''
+\S1'2''3''  ->  \S3 \S1'2''3'''
+\S1'2''3'''  ->  C \S1'2''3''''2  |  \S1 \S1'2''3''''
+\S1'2''3''''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'2''3''''2  ->  C \S1'2''3''''2'
+\S1'2''3''''2'  ->  \S1 \S1'2''3''''2''
+\S1'2''3''''2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'2''4  ->  C \S1'2''4'2  |  \S1 \S1'2''4'
+\S1'2''4'  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'2''4'2  ->  C \S1'2''4'2'
+\S1'2''4'2'  ->  \S1 \S1'2''4'2''
+\S1'2''4'2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'3  ->  E \S1'3'
+\S1'3'  ->  ) \S1'3''
+\S1'3''  ->  \S4 \S1'3'''2  |  * \S1'3'''
+\S1'3'''  ->  * \S1'3''''
+\S1'3''''  ->  F \S1'3'''''
+\S1'3'''''  ->  \S4 \S1'3''''''
+\S1'3''''''  ->  \S3 \S1'3'''''''2  |  - \S1'3'''''''
+\S1'3'''''''  ->  - \S1'3''''''''
+\S1'3''''''''  ->  T \S1'3'''''''''
+\S1'3'''''''''  ->  \S3 \S1'3''''''''''
+\S1'3''''''''''  ->  C \S1'3'''''''''''2  |  \S1 \S1'3'''''''''''
+\S1'3'''''''''''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'3'''''''''''2  ->  C \S1'3'''''''''''2'
+\S1'3'''''''''''2'  ->  \S1 \S1'3'''''''''''2''
+\S1'3'''''''''''2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'3'''''''2  ->  C \S1'3'''''''2'2  |  \S1 \S1'3'''''''2'
+\S1'3'''''''2'  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'3'''''''2'2  ->  C \S1'3'''''''2'2'
+\S1'3'''''''2'2'  ->  \S1 \S1'3'''''''2'2''
+\S1'3'''''''2'2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'3'''2  ->  \S3 \S1'3'''2'2  |  - \S1'3'''2'
+\S1'3'''2'  ->  - \S1'3'''2''
+\S1'3'''2''  ->  T \S1'3'''2'''
+\S1'3'''2'''  ->  \S3 \S1'3'''2''''
+\S1'3'''2''''  ->  C \S1'3'''2'''''2  |  \S1 \S1'3'''2'''''
+\S1'3'''2'''''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'3'''2'''''2  ->  C \S1'3'''2'''''2'
+\S1'3'''2'''''2'  ->  \S1 \S1'3'''2'''''2''
+\S1'3'''2'''''2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'3'''2'2  ->  C \S1'3'''2'2'2  |  \S1 \S1'3'''2'2'
+\S1'3'''2'2'  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'3'''2'2'2  ->  C \S1'3'''2'2'2'
+\S1'3'''2'2'2'  ->  \S1 \S1'3'''2'2'2''
+\S1'3'''2'2'2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'4  ->  \S4 \S1'4'2  |  * \S1'4'
+\S1'4'  ->  * \S1'4''
+\S1'4''  ->  F \S1'4'''
+\S1'4'''  ->  \S4 \S1'4''''
+\S1'4''''  ->  \S3 \S1'4'''''2  |  - \S1'4'''''
+\S1'4'''''  ->  - \S1'4''''''
+\S1'4''''''  ->  T \S1'4'''''''
+\S1'4'''''''  ->  \S3 \S1'4''''''''
+\S1'4''''''''  ->  C \S1'4'''''''''2  |  \S1 \S1'4'''''''''
+\S1'4'''''''''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'4'''''''''2  ->  C \S1'4'''''''''2'
+\S1'4'''''''''2'  ->  \S1 \S1'4'''''''''2''
+\S1'4'''''''''2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'4'''''2  ->  C \S1'4'''''2'2  |  \S1 \S1'4'''''2'
+\S1'4'''''2'  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'4'''''2'2  ->  C \S1'4'''''2'2'
+\S1'4'''''2'2'  ->  \S1 \S1'4'''''2'2''
+\S1'4'''''2'2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'4'2  ->  \S3 \S1'4'2'2  |  - \S1'4'2'
+\S1'4'2'  ->  - \S1'4'2''
+\S1'4'2''  ->  T \S1'4'2'''
+\S1'4'2'''  ->  \S3 \S1'4'2''''
+\S1'4'2''''  ->  C \S1'4'2'''''2  |  \S1 \S1'4'2'''''
+\S1'4'2'''''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'4'2'''''2  ->  C \S1'4'2'''''2'
+\S1'4'2'''''2'  ->  \S1 \S1'4'2'''''2''
+\S1'4'2'''''2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'4'2'2  ->  C \S1'4'2'2'2  |  \S1 \S1'4'2'2'
+\S1'4'2'2'  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'4'2'2'2  ->  C \S1'4'2'2'2'
+\S1'4'2'2'2'  ->  \S1 \S1'4'2'2'2''
+\S1'4'2'2'2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'5  ->  \S4 \S1'5'2  |  * \S1'5'
+\S1'5'  ->  * \S1'5''
+\S1'5''  ->  F \S1'5'''
+\S1'5'''  ->  \S4 \S1'5''''
+\S1'5''''  ->  \S3 \S1'5'''''2  |  - \S1'5'''''
+\S1'5'''''  ->  - \S1'5''''''
+\S1'5''''''  ->  T \S1'5'''''''
+\S1'5'''''''  ->  \S3 \S1'5''''''''
+\S1'5''''''''  ->  C \S1'5'''''''''2  |  \S1 \S1'5'''''''''
+\S1'5'''''''''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'5'''''''''2  ->  C \S1'5'''''''''2'
+\S1'5'''''''''2'  ->  \S1 \S1'5'''''''''2''
+\S1'5'''''''''2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'5'''''2  ->  C \S1'5'''''2'2  |  \S1 \S1'5'''''2'
+\S1'5'''''2'  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'5'''''2'2  ->  C \S1'5'''''2'2'
+\S1'5'''''2'2'  ->  \S1 \S1'5'''''2'2''
+\S1'5'''''2'2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'5'2  ->  \S3 \S1'5'2'2  |  - \S1'5'2'
+\S1'5'2'  ->  - \S1'5'2''
+\S1'5'2''  ->  T \S1'5'2'''
+\S1'5'2'''  ->  \S3 \S1'5'2''''
+\S1'5'2''''  ->  C \S1'5'2'''''2  |  \S1 \S1'5'2'''''
+\S1'5'2'''''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'5'2'''''2  ->  C \S1'5'2'''''2'
+\S1'5'2'''''2'  ->  \S1 \S1'5'2'''''2''
+\S1'5'2'''''2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'5'2'2  ->  C \S1'5'2'2'2  |  \S1 \S1'5'2'2'
+\S1'5'2'2'  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'5'2'2'2  ->  C \S1'5'2'2'2'
+\S1'5'2'2'2'  ->  \S1 \S1'5'2'2'2''
+\S1'5'2'2'2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'6  ->  \S4 \S1'6'2  |  * \S1'6'
+\S1'6'  ->  * \S1'6''
+\S1'6''  ->  F \S1'6'''
+\S1'6'''  ->  \S4 \S1'6''''
+\S1'6''''  ->  \S3 \S1'6'''''2  |  - \S1'6'''''
+\S1'6'''''  ->  - \S1'6''''''
+\S1'6''''''  ->  T \S1'6'''''''
+\S1'6'''''''  ->  \S3 \S1'6''''''''
+\S1'6''''''''  ->  C \S1'6'''''''''2  |  \S1 \S1'6'''''''''
+\S1'6'''''''''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'6'''''''''2  ->  C \S1'6'''''''''2'
+\S1'6'''''''''2'  ->  \S1 \S1'6'''''''''2''
+\S1'6'''''''''2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'6'''''2  ->  C \S1'6'''''2'2  |  \S1 \S1'6'''''2'
+\S1'6'''''2'  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'6'''''2'2  ->  C \S1'6'''''2'2'
+\S1'6'''''2'2'  ->  \S1 \S1'6'''''2'2''
+\S1'6'''''2'2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'6'2  ->  \S3 \S1'6'2'2  |  - \S1'6'2'
+\S1'6'2'  ->  - \S1'6'2''
+\S1'6'2''  ->  T \S1'6'2'''
+\S1'6'2'''  ->  \S3 \S1'6'2''''
+\S1'6'2''''  ->  C \S1'6'2'''''2  |  \S1 \S1'6'2'''''
+\S1'6'2'''''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'6'2'''''2  ->  C \S1'6'2'''''2'
+\S1'6'2'''''2'  ->  \S1 \S1'6'2'''''2''
+\S1'6'2'''''2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'6'2'2  ->  C \S1'6'2'2'2  |  \S1 \S1'6'2'2'
+\S1'6'2'2'  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'6'2'2'2  ->  C \S1'6'2'2'2'
+\S1'6'2'2'2'  ->  \S1 \S1'6'2'2'2''
+\S1'6'2'2'2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'7  ->  \S4 \S1'7'2  |  * \S1'7'
+\S1'7'  ->  * \S1'7''
+\S1'7''  ->  F \S1'7'''
+\S1'7'''  ->  \S4 \S1'7''''
+\S1'7''''  ->  \S3 \S1'7'''''2  |  - \S1'7'''''
+\S1'7'''''  ->  - \S1'7''''''
+\S1'7''''''  ->  T \S1'7'''''''
+\S1'7'''''''  ->  \S3 \S1'7''''''''
+\S1'7''''''''  ->  C \S1'7'''''''''2  |  \S1 \S1'7'''''''''
+\S1'7'''''''''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'7'''''''''2  ->  C \S1'7'''''''''2'
+\S1'7'''''''''2'  ->  \S1 \S1'7'''''''''2''
+\S1'7'''''''''2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'7'''''2  ->  C \S1'7'''''2'2  |  \S1 \S1'7'''''2'
+\S1'7'''''2'  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'7'''''2'2  ->  C \S1'7'''''2'2'
+\S1'7'''''2'2'  ->  \S1 \S1'7'''''2'2''
+\S1'7'''''2'2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'7'2  ->  \S3 \S1'7'2'2  |  - \S1'7'2'
+\S1'7'2'  ->  - \S1'7'2''
+\S1'7'2''  ->  T \S1'7'2'''
+\S1'7'2'''  ->  \S3 \S1'7'2''''
+\S1'7'2''''  ->  C \S1'7'2'''''2  |  \S1 \S1'7'2'''''
+\S1'7'2'''''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'7'2'''''2  ->  C \S1'7'2'''''2'
+\S1'7'2'''''2'  ->  \S1 \S1'7'2'''''2''
+\S1'7'2'''''2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'7'2'2  ->  C \S1'7'2'2'2  |  \S1 \S1'7'2'2'
+\S1'7'2'2'  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'7'2'2'2  ->  C \S1'7'2'2'2'
+\S1'7'2'2'2'  ->  \S1 \S1'7'2'2'2''
+\S1'7'2'2'2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'8  ->  \S4 \S1'8'2  |  * \S1'8'
+\S1'8'  ->  * \S1'8''
+\S1'8''  ->  F \S1'8'''
+\S1'8'''  ->  \S4 \S1'8''''
+\S1'8''''  ->  \S3 \S1'8'''''2  |  - \S1'8'''''
+\S1'8'''''  ->  - \S1'8''''''
+\S1'8''''''  ->  T \S1'8'''''''
+\S1'8'''''''  ->  \S3 \S1'8''''''''
+\S1'8''''''''  ->  C \S1'8'''''''''2  |  \S1 \S1'8'''''''''
+\S1'8'''''''''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'8'''''''''2  ->  C \S1'8'''''''''2'
+\S1'8'''''''''2'  ->  \S1 \S1'8'''''''''2''
+\S1'8'''''''''2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'8'''''2  ->  C \S1'8'''''2'2  |  \S1 \S1'8'''''2'
+\S1'8'''''2'  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'8'''''2'2  ->  C \S1'8'''''2'2'
+\S1'8'''''2'2'  ->  \S1 \S1'8'''''2'2''
+\S1'8'''''2'2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'8'2  ->  \S3 \S1'8'2'2  |  - \S1'8'2'
+\S1'8'2'  ->  - \S1'8'2''
+\S1'8'2''  ->  T \S1'8'2'''
+\S1'8'2'''  ->  \S3 \S1'8'2''''
+\S1'8'2''''  ->  C \S1'8'2'''''2  |  \S1 \S1'8'2'''''
+\S1'8'2'''''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'8'2'''''2  ->  C \S1'8'2'''''2'
+\S1'8'2'''''2'  ->  \S1 \S1'8'2'''''2''
+\S1'8'2'''''2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'8'2'2  ->  C \S1'8'2'2'2  |  \S1 \S1'8'2'2'
+\S1'8'2'2'  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'8'2'2'2  ->  C \S1'8'2'2'2'
+\S1'8'2'2'2'  ->  \S1 \S1'8'2'2'2''
+\S1'8'2'2'2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'9  ->  \S4 \S1'9'2  |  * \S1'9'
+\S1'9'  ->  * \S1'9''
+\S1'9''  ->  F \S1'9'''
+\S1'9'''  ->  \S4 \S1'9''''
+\S1'9''''  ->  \S3 \S1'9'''''2  |  - \S1'9'''''
+\S1'9'''''  ->  - \S1'9''''''
+\S1'9''''''  ->  T \S1'9'''''''
+\S1'9'''''''  ->  \S3 \S1'9''''''''
+\S1'9''''''''  ->  C \S1'9'''''''''2  |  \S1 \S1'9'''''''''
+\S1'9'''''''''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'9'''''''''2  ->  C \S1'9'''''''''2'
+\S1'9'''''''''2'  ->  \S1 \S1'9'''''''''2''
+\S1'9'''''''''2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'9'''''2  ->  C \S1'9'''''2'2  |  \S1 \S1'9'''''2'
+\S1'9'''''2'  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'9'''''2'2  ->  C \S1'9'''''2'2'
+\S1'9'''''2'2'  ->  \S1 \S1'9'''''2'2''
+\S1'9'''''2'2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'9'2  ->  \S3 \S1'9'2'2  |  - \S1'9'2'
+\S1'9'2'  ->  - \S1'9'2''
+\S1'9'2''  ->  T \S1'9'2'''
+\S1'9'2'''  ->  \S3 \S1'9'2''''
+\S1'9'2''''  ->  C \S1'9'2'''''2  |  \S1 \S1'9'2'''''
+\S1'9'2'''''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'9'2'''''2  ->  C \S1'9'2'''''2'
+\S1'9'2'''''2'  ->  \S1 \S1'9'2'''''2''
+\S1'9'2'''''2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'9'2'2  ->  C \S1'9'2'2'2  |  \S1 \S1'9'2'2'
+\S1'9'2'2'  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S1'9'2'2'2  ->  C \S1'9'2'2'2'
+\S1'9'2'2'2'  ->  \S1 \S1'9'2'2'2''
+\S1'9'2'2'2''  ->  B B \S2 C C C \S1  |  \S2 C C C \S1
+\S2  ->  \eps \S2'13  |  9 \S2'12  |  8 \S2'11  |  7 \S2'10  |  6 \S2'9  |  5 \S2'8  |  4 \S2'7  |  3 \S2'6  |  2 \S2'5  |  1 \S2'4  |  ( \S2'3  |  * \S2'2  |  0 \S2'  |  \eps
+\S2'  ->  \S4 \S2''3  |  * \S2''2  |  0 \S2''
+\S2''  ->  \S4 \S2'''2  |  * \S2'''
+\S2'''  ->  * \S2''''
+\S2''''  ->  F \S2'''''
+\S2'''''  ->  \S4 \S2''''''
+\S2''''''  ->  \S3 \S2'''''''2  |  - \S2'''''''
+\S2'''''''  ->  - \S2''''''''
+\S2''''''''  ->  T \S2'''''''''
+\S2'''''''''  ->  \S3 \S2''''''''''
+\S2''''''''''  ->  C \S2'''''''''''2  |  \S1 \S2'''''''''''
+\S2'''''''''''  ->  \S2 \S2''''''''''''2  |  B \S2''''''''''''
+\S2''''''''''''  ->  B \S2'''''''''''''
+\S2'''''''''''''  ->  \S2 \S2''''''''''''''
+\S2''''''''''''''  ->  \S1 \S2'''''''''''''''
+\S2'''''''''''''''  ->  B B \S2  |  \S2
+\S2''''''''''''2  ->  \S1 \S2''''''''''''2'
+\S2''''''''''''2'  ->  B B \S2  |  \S2
+\S2'''''''''''2  ->  C \S2'''''''''''2'
+\S2'''''''''''2'  ->  \S1 \S2'''''''''''2''
+\S2'''''''''''2''  ->  \S2 \S2'''''''''''2'''2  |  B \S2'''''''''''2'''
+\S2'''''''''''2'''  ->  B \S2'''''''''''2''''
+\S2'''''''''''2''''  ->  \S2 \S2'''''''''''2'''''
+\S2'''''''''''2'''''  ->  \S1 \S2'''''''''''2''''''
+\S2'''''''''''2''''''  ->  B B \S2  |  \S2
+\S2'''''''''''2'''2  ->  \S1 \S2'''''''''''2'''2'
+\S2'''''''''''2'''2'  ->  B B \S2  |  \S2
+\S2'''''''2  ->  C \S2'''''''2'2  |  \S1 \S2'''''''2'
+\S2'''''''2'  ->  \S2 \S2'''''''2''2  |  B \S2'''''''2''
+\S2'''''''2''  ->  B \S2'''''''2'''
+\S2'''''''2'''  ->  \S2 \S2'''''''2''''
+\S2'''''''2''''  ->  \S1 \S2'''''''2'''''
+\S2'''''''2'''''  ->  B B \S2  |  \S2
+\S2'''''''2''2  ->  \S1 \S2'''''''2''2'
+\S2'''''''2''2'  ->  B B \S2  |  \S2
+\S2'''''''2'2  ->  C \S2'''''''2'2'
+\S2'''''''2'2'  ->  \S1 \S2'''''''2'2''
+\S2'''''''2'2''  ->  \S2 \S2'''''''2'2'''2  |  B \S2'''''''2'2'''
+\S2'''''''2'2'''  ->  B \S2'''''''2'2''''
+\S2'''''''2'2''''  ->  \S2 \S2'''''''2'2'''''
+\S2'''''''2'2'''''  ->  \S1 \S2'''''''2'2''''''
+\S2'''''''2'2''''''  ->  B B \S2  |  \S2
+\S2'''''''2'2'''2  ->  \S1 \S2'''''''2'2'''2'
+\S2'''''''2'2'''2'  ->  B B \S2  |  \S2
+\S2'''2  ->  \S3 \S2'''2'2  |  - \S2'''2'
+\S2'''2'  ->  - \S2'''2''
+\S2'''2''  ->  T \S2'''2'''
+\S2'''2'''  ->  \S3 \S2'''2''''
+\S2'''2''''  ->  C \S2'''2'''''2  |  \S1 \S2'''2'''''
+\S2'''2'''''  ->  \S2 \S2'''2''''''2  |  B \S2'''2''''''
+\S2'''2''''''  ->  B \S2'''2'''''''
+\S2'''2'''''''  ->  \S2 \S2'''2''''''''
+\S2'''2''''''''  ->  \S1 \S2'''2'''''''''
+\S2'''2'''''''''  ->  B B \S2  |  \S2
+\S2'''2''''''2  ->  \S1 \S2'''2''''''2'
+\S2'''2''''''2'  ->  B B \S2  |  \S2
+\S2'''2'''''2  ->  C \S2'''2'''''2'
+\S2'''2'''''2'  ->  \S1 \S2'''2'''''2''
+\S2'''2'''''2''  ->  \S2 \S2'''2'''''2'''2  |  B \S2'''2'''''2'''
+\S2'''2'''''2'''  ->  B \S2'''2'''''2''''
+\S2'''2'''''2''''  ->  \S2 \S2'''2'''''2'''''
+\S2'''2'''''2'''''  ->  \S1 \S2'''2'''''2''''''
+\S2'''2'''''2''''''  ->  B B \S2  |  \S2
+\S2'''2'''''2'''2  ->  \S1 \S2'''2'''''2'''2'
+\S2'''2'''''2'''2'  ->  B B \S2  |  \S2
+\S2'''2'2  ->  C \S2'''2'2'2  |  \S1 \S2'''2'2'
+\S2'''2'2'  ->  \S2 \S2'''2'2''2  |  B \S2'''2'2''
+\S2'''2'2''  ->  B \S2'''2'2'''
+\S2'''2'2'''  ->  \S2 \S2'''2'2''''
+\S2'''2'2''''  ->  \S1 \S2'''2'2'''''
+\S2'''2'2'''''  ->  B B \S2  |  \S2
+\S2'''2'2''2  ->  \S1 \S2'''2'2''2'
+\S2'''2'2''2'  ->  B B \S2  |  \S2
+\S2'''2'2'2  ->  C \S2'''2'2'2'
+\S2'''2'2'2'  ->  \S1 \S2'''2'2'2''
+\S2'''2'2'2''  ->  \S2 \S2'''2'2'2'''2  |  B \S2'''2'2'2'''
+\S2'''2'2'2'''  ->  B \S2'''2'2'2''''
+\S2'''2'2'2''''  ->  \S2 \S2'''2'2'2'''''
+\S2'''2'2'2'''''  ->  \S1 \S2'''2'2'2''''''
+\S2'''2'2'2''''''  ->  B B \S2  |  \S2
+\S2'''2'2'2'''2  ->  \S1 \S2'''2'2'2'''2'
+\S2'''2'2'2'''2'  ->  B B \S2  |  \S2
+\S2''2  ->  * \S2''2'
+\S2''2'  ->  F \S2''2''
+\S2''2''  ->  \S4 \S2''2'''
+\S2''2'''  ->  \S3 \S2''2''''2  |  - \S2''2''''
+\S2''2''''  ->  - \S2''2'''''
+\S2''2'''''  ->  T \S2''2''''''
+\S2''2''''''  ->  \S3 \S2''2'''''''
+\S2''2'''''''  ->  C \S2''2''''''''2  |  \S1 \S2''2''''''''
+\S2''2''''''''  ->  \S2 \S2''2'''''''''2  |  B \S2''2'''''''''
+\S2''2'''''''''  ->  B \S2''2''''''''''
+\S2''2''''''''''  ->  \S2 \S2''2'''''''''''
+\S2''2'''''''''''  ->  \S1 \S2''2''''''''''''
+\S2''2''''''''''''  ->  B B \S2  |  \S2
+\S2''2'''''''''2  ->  \S1 \S2''2'''''''''2'
+\S2''2'''''''''2'  ->  B B \S2  |  \S2
+\S2''2''''''''2  ->  C \S2''2''''''''2'
+\S2''2''''''''2'  ->  \S1 \S2''2''''''''2''
+\S2''2''''''''2''  ->  \S2 \S2''2''''''''2'''2  |  B \S2''2''''''''2'''
+\S2''2''''''''2'''  ->  B \S2''2''''''''2''''
+\S2''2''''''''2''''  ->  \S2 \S2''2''''''''2'''''
+\S2''2''''''''2'''''  ->  \S1 \S2''2''''''''2''''''
+\S2''2''''''''2''''''  ->  B B \S2  |  \S2
+\S2''2''''''''2'''2  ->  \S1 \S2''2''''''''2'''2'
+\S2''2''''''''2'''2'  ->  B B \S2  |  \S2
+\S2''2''''2  ->  C \S2''2''''2'2  |  \S1 \S2''2''''2'
+\S2''2''''2'  ->  \S2 \S2''2''''2''2  |  B \S2''2''''2''
+\S2''2''''2''  ->  B \S2''2''''2'''
+\S2''2''''2'''  ->  \S2 \S2''2''''2''''
+\S2''2''''2''''  ->  \S1 \S2''2''''2'''''
+\S2''2''''2'''''  ->  B B \S2  |  \S2
+\S2''2''''2''2  ->  \S1 \S2''2''''2''2'
+\S2''2''''2''2'  ->  B B \S2  |  \S2
+\S2''2''''2'2  ->  C \S2''2''''2'2'
+\S2''2''''2'2'  ->  \S1 \S2''2''''2'2''
+\S2''2''''2'2''  ->  \S2 \S2''2''''2'2'''2  |  B \S2''2''''2'2'''
+\S2''2''''2'2'''  ->  B \S2''2''''2'2''''
+\S2''2''''2'2''''  ->  \S2 \S2''2''''2'2'''''
+\S2''2''''2'2'''''  ->  \S1 \S2''2''''2'2''''''
+\S2''2''''2'2''''''  ->  B B \S2  |  \S2
+\S2''2''''2'2'''2  ->  \S1 \S2''2''''2'2'''2'
+\S2''2''''2'2'''2'  ->  B B \S2  |  \S2
+\S2''3  ->  \S3 \S2''3'2  |  - \S2''3'
+\S2''3'  ->  - \S2''3''
+\S2''3''  ->  T \S2''3'''
+\S2''3'''  ->  \S3 \S2''3''''
+\S2''3''''  ->  C \S2''3'''''2  |  \S1 \S2''3'''''
+\S2''3'''''  ->  \S2 \S2''3''''''2  |  B \S2''3''''''
+\S2''3''''''  ->  B \S2''3'''''''
+\S2''3'''''''  ->  \S2 \S2''3''''''''
+\S2''3''''''''  ->  \S1 \S2''3'''''''''
+\S2''3'''''''''  ->  B B \S2  |  \S2
+\S2''3''''''2  ->  \S1 \S2''3''''''2'
+\S2''3''''''2'  ->  B B \S2  |  \S2
+\S2''3'''''2  ->  C \S2''3'''''2'
+\S2''3'''''2'  ->  \S1 \S2''3'''''2''
+\S2''3'''''2''  ->  \S2 \S2''3'''''2'''2  |  B \S2''3'''''2'''
+\S2''3'''''2'''  ->  B \S2''3'''''2''''
+\S2''3'''''2''''  ->  \S2 \S2''3'''''2'''''
+\S2''3'''''2'''''  ->  \S1 \S2''3'''''2''''''
+\S2''3'''''2''''''  ->  B B \S2  |  \S2
+\S2''3'''''2'''2  ->  \S1 \S2''3'''''2'''2'
+\S2''3'''''2'''2'  ->  B B \S2  |  \S2
+\S2''3'2  ->  C \S2''3'2'2  |  \S1 \S2''3'2'
+\S2''3'2'  ->  \S2 \S2''3'2''2  |  B \S2''3'2''
+\S2''3'2''  ->  B \S2''3'2'''
+\S2''3'2'''  ->  \S2 \S2''3'2''''
+\S2''3'2''''  ->  \S1 \S2''3'2'''''
+\S2''3'2'''''  ->  B B \S2  |  \S2
+\S2''3'2''2  ->  \S1 \S2''3'2''2'
+\S2''3'2''2'  ->  B B \S2  |  \S2
+\S2''3'2'2  ->  C \S2''3'2'2'
+\S2''3'2'2'  ->  \S1 \S2''3'2'2''
+\S2''3'2'2''  ->  \S2 \S2''3'2'2'''2  |  B \S2''3'2'2'''
+\S2''3'2'2'''  ->  B \S2''3'2'2''''
+\S2''3'2'2''''  ->  \S2 \S2''3'2'2'''''
+\S2''3'2'2'''''  ->  \S1 \S2''3'2'2''''''
+\S2''3'2'2''''''  ->  B B \S2  |  \S2
+\S2''3'2'2'''2  ->  \S1 \S2''3'2'2'''2'
+\S2''3'2'2'''2'  ->  B B \S2  |  \S2
+\S2'10  ->  \S4 \S2'10'2  |  * \S2'10'
+\S2'10'  ->  * \S2'10''
+\S2'10''  ->  F \S2'10'''
+\S2'10'''  ->  \S4 \S2'10''''
+\S2'10''''  ->  \S3 \S2'10'''''2  |  - \S2'10'''''
+\S2'10'''''  ->  - \S2'10''''''
+\S2'10''''''  ->  T \S2'10'''''''
+\S2'10'''''''  ->  \S3 \S2'10''''''''
+\S2'10''''''''  ->  C \S2'10'''''''''2  |  \S1 \S2'10'''''''''
+\S2'10'''''''''  ->  \S2 \S2'10''''''''''2  |  B \S2'10''''''''''
+\S2'10''''''''''  ->  B \S2'10'''''''''''
+\S2'10'''''''''''  ->  \S2 \S2'10''''''''''''
+\S2'10''''''''''''  ->  \S1 \S2'10'''''''''''''
+\S2'10'''''''''''''  ->  B B \S2  |  \S2
+\S2'10''''''''''2  ->  \S1 \S2'10''''''''''2'
+\S2'10''''''''''2'  ->  B B \S2  |  \S2
+\S2'10'''''''''2  ->  C \S2'10'''''''''2'
+\S2'10'''''''''2'  ->  \S1 \S2'10'''''''''2''
+\S2'10'''''''''2''  ->  \S2 \S2'10'''''''''2'''2  |  B \S2'10'''''''''2'''
+\S2'10'''''''''2'''  ->  B \S2'10'''''''''2''''
+\S2'10'''''''''2''''  ->  \S2 \S2'10'''''''''2'''''
+\S2'10'''''''''2'''''  ->  \S1 \S2'10'''''''''2''''''
+\S2'10'''''''''2''''''  ->  B B \S2  |  \S2
+\S2'10'''''''''2'''2  ->  \S1 \S2'10'''''''''2'''2'
+\S2'10'''''''''2'''2'  ->  B B \S2  |  \S2
+\S2'10'''''2  ->  C \S2'10'''''2'2  |  \S1 \S2'10'''''2'
+\S2'10'''''2'  ->  \S2 \S2'10'''''2''2  |  B \S2'10'''''2''
+\S2'10'''''2''  ->  B \S2'10'''''2'''
+\S2'10'''''2'''  ->  \S2 \S2'10'''''2''''
+\S2'10'''''2''''  ->  \S1 \S2'10'''''2'''''
+\S2'10'''''2'''''  ->  B B \S2  |  \S2
+\S2'10'''''2''2  ->  \S1 \S2'10'''''2''2'
+\S2'10'''''2''2'  ->  B B \S2  |  \S2
+\S2'10'''''2'2  ->  C \S2'10'''''2'2'
+\S2'10'''''2'2'  ->  \S1 \S2'10'''''2'2''
+\S2'10'''''2'2''  ->  \S2 \S2'10'''''2'2'''2  |  B \S2'10'''''2'2'''
+\S2'10'''''2'2'''  ->  B \S2'10'''''2'2''''
+\S2'10'''''2'2''''  ->  \S2 \S2'10'''''2'2'''''
+\S2'10'''''2'2'''''  ->  \S1 \S2'10'''''2'2''''''
+\S2'10'''''2'2''''''  ->  B B \S2  |  \S2
+\S2'10'''''2'2'''2  ->  \S1 \S2'10'''''2'2'''2'
+\S2'10'''''2'2'''2'  ->  B B \S2  |  \S2
+\S2'10'2  ->  \S3 \S2'10'2'2  |  - \S2'10'2'
+\S2'10'2'  ->  - \S2'10'2''
+\S2'10'2''  ->  T \S2'10'2'''
+\S2'10'2'''  ->  \S3 \S2'10'2''''
+\S2'10'2''''  ->  C \S2'10'2'''''2  |  \S1 \S2'10'2'''''
+\S2'10'2'''''  ->  \S2 \S2'10'2''''''2  |  B \S2'10'2''''''
+\S2'10'2''''''  ->  B \S2'10'2'''''''
+\S2'10'2'''''''  ->  \S2 \S2'10'2''''''''
+\S2'10'2''''''''  ->  \S1 \S2'10'2'''''''''
+\S2'10'2'''''''''  ->  B B \S2  |  \S2
+\S2'10'2''''''2  ->  \S1 \S2'10'2''''''2'
+\S2'10'2''''''2'  ->  B B \S2  |  \S2
+\S2'10'2'''''2  ->  C \S2'10'2'''''2'
+\S2'10'2'''''2'  ->  \S1 \S2'10'2'''''2''
+\S2'10'2'''''2''  ->  \S2 \S2'10'2'''''2'''2  |  B \S2'10'2'''''2'''
+\S2'10'2'''''2'''  ->  B \S2'10'2'''''2''''
+\S2'10'2'''''2''''  ->  \S2 \S2'10'2'''''2'''''
+\S2'10'2'''''2'''''  ->  \S1 \S2'10'2'''''2''''''
+\S2'10'2'''''2''''''  ->  B B \S2  |  \S2
+\S2'10'2'''''2'''2  ->  \S1 \S2'10'2'''''2'''2'
+\S2'10'2'''''2'''2'  ->  B B \S2  |  \S2
+\S2'10'2'2  ->  C \S2'10'2'2'2  |  \S1 \S2'10'2'2'
+\S2'10'2'2'  ->  \S2 \S2'10'2'2''2  |  B \S2'10'2'2''
+\S2'10'2'2''  ->  B \S2'10'2'2'''
+\S2'10'2'2'''  ->  \S2 \S2'10'2'2''''
+\S2'10'2'2''''  ->  \S1 \S2'10'2'2'''''
+\S2'10'2'2'''''  ->  B B \S2  |  \S2
+\S2'10'2'2''2  ->  \S1 \S2'10'2'2''2'
+\S2'10'2'2''2'  ->  B B \S2  |  \S2
+\S2'10'2'2'2  ->  C \S2'10'2'2'2'
+\S2'10'2'2'2'  ->  \S1 \S2'10'2'2'2''
+\S2'10'2'2'2''  ->  \S2 \S2'10'2'2'2'''2  |  B \S2'10'2'2'2'''
+\S2'10'2'2'2'''  ->  B \S2'10'2'2'2''''
+\S2'10'2'2'2''''  ->  \S2 \S2'10'2'2'2'''''
+\S2'10'2'2'2'''''  ->  \S1 \S2'10'2'2'2''''''
+\S2'10'2'2'2''''''  ->  B B \S2  |  \S2
+\S2'10'2'2'2'''2  ->  \S1 \S2'10'2'2'2'''2'
+\S2'10'2'2'2'''2'  ->  B B \S2  |  \S2
+\S2'11  ->  \S4 \S2'11'2  |  * \S2'11'
+\S2'11'  ->  * \S2'11''
+\S2'11''  ->  F \S2'11'''
+\S2'11'''  ->  \S4 \S2'11''''
+\S2'11''''  ->  \S3 \S2'11'''''2  |  - \S2'11'''''
+\S2'11'''''  ->  - \S2'11''''''
+\S2'11''''''  ->  T \S2'11'''''''
+\S2'11'''''''  ->  \S3 \S2'11''''''''
+\S2'11''''''''  ->  C \S2'11'''''''''2  |  \S1 \S2'11'''''''''
+\S2'11'''''''''  ->  \S2 \S2'11''''''''''2  |  B \S2'11''''''''''
+\S2'11''''''''''  ->  B \S2'11'''''''''''
+\S2'11'''''''''''  ->  \S2 \S2'11''''''''''''
+\S2'11''''''''''''  ->  \S1 \S2'11'''''''''''''
+\S2'11'''''''''''''  ->  B B \S2  |  \S2
+\S2'11''''''''''2  ->  \S1 \S2'11''''''''''2'
+\S2'11''''''''''2'  ->  B B \S2  |  \S2
+\S2'11'''''''''2  ->  C \S2'11'''''''''2'
+\S2'11'''''''''2'  ->  \S1 \S2'11'''''''''2''
+\S2'11'''''''''2''  ->  \S2 \S2'11'''''''''2'''2  |  B \S2'11'''''''''2'''
+\S2'11'''''''''2'''  ->  B \S2'11'''''''''2''''
+\S2'11'''''''''2''''  ->  \S2 \S2'11'''''''''2'''''
+\S2'11'''''''''2'''''  ->  \S1 \S2'11'''''''''2''''''
+\S2'11'''''''''2''''''  ->  B B \S2  |  \S2
+\S2'11'''''''''2'''2  ->  \S1 \S2'11'''''''''2'''2'
+\S2'11'''''''''2'''2'  ->  B B \S2  |  \S2
+\S2'11'''''2  ->  C \S2'11'''''2'2  |  \S1 \S2'11'''''2'
+\S2'11'''''2'  ->  \S2 \S2'11'''''2''2  |  B \S2'11'''''2''
+\S2'11'''''2''  ->  B \S2'11'''''2'''
+\S2'11'''''2'''  ->  \S2 \S2'11'''''2''''
+\S2'11'''''2''''  ->  \S1 \S2'11'''''2'''''
+\S2'11'''''2'''''  ->  B B \S2  |  \S2
+\S2'11'''''2''2  ->  \S1 \S2'11'''''2''2'
+\S2'11'''''2''2'  ->  B B \S2  |  \S2
+\S2'11'''''2'2  ->  C \S2'11'''''2'2'
+\S2'11'''''2'2'  ->  \S1 \S2'11'''''2'2''
+\S2'11'''''2'2''  ->  \S2 \S2'11'''''2'2'''2  |  B \S2'11'''''2'2'''
+\S2'11'''''2'2'''  ->  B \S2'11'''''2'2''''
+\S2'11'''''2'2''''  ->  \S2 \S2'11'''''2'2'''''
+\S2'11'''''2'2'''''  ->  \S1 \S2'11'''''2'2''''''
+\S2'11'''''2'2''''''  ->  B B \S2  |  \S2
+\S2'11'''''2'2'''2  ->  \S1 \S2'11'''''2'2'''2'
+\S2'11'''''2'2'''2'  ->  B B \S2  |  \S2
+\S2'11'2  ->  \S3 \S2'11'2'2  |  - \S2'11'2'
+\S2'11'2'  ->  - \S2'11'2''
+\S2'11'2''  ->  T \S2'11'2'''
+\S2'11'2'''  ->  \S3 \S2'11'2''''
+\S2'11'2''''  ->  C \S2'11'2'''''2  |  \S1 \S2'11'2'''''
+\S2'11'2'''''  ->  \S2 \S2'11'2''''''2  |  B \S2'11'2''''''
+\S2'11'2''''''  ->  B \S2'11'2'''''''
+\S2'11'2'''''''  ->  \S2 \S2'11'2''''''''
+\S2'11'2''''''''  ->  \S1 \S2'11'2'''''''''
+\S2'11'2'''''''''  ->  B B \S2  |  \S2
+\S2'11'2''''''2  ->  \S1 \S2'11'2''''''2'
+\S2'11'2''''''2'  ->  B B \S2  |  \S2
+\S2'11'2'''''2  ->  C \S2'11'2'''''2'
+\S2'11'2'''''2'  ->  \S1 \S2'11'2'''''2''
+\S2'11'2'''''2''  ->  \S2 \S2'11'2'''''2'''2  |  B \S2'11'2'''''2'''
+\S2'11'2'''''2'''  ->  B \S2'11'2'''''2''''
+\S2'11'2'''''2''''  ->  \S2 \S2'11'2'''''2'''''
+\S2'11'2'''''2'''''  ->  \S1 \S2'11'2'''''2''''''
+\S2'11'2'''''2''''''  ->  B B \S2  |  \S2
+\S2'11'2'''''2'''2  ->  \S1 \S2'11'2'''''2'''2'
+\S2'11'2'''''2'''2'  ->  B B \S2  |  \S2
+\S2'11'2'2  ->  C \S2'11'2'2'2  |  \S1 \S2'11'2'2'
+\S2'11'2'2'  ->  \S2 \S2'11'2'2''2  |  B \S2'11'2'2''
+\S2'11'2'2''  ->  B \S2'11'2'2'''
+\S2'11'2'2'''  ->  \S2 \S2'11'2'2''''
+\S2'11'2'2''''  ->  \S1 \S2'11'2'2'''''
+\S2'11'2'2'''''  ->  B B \S2  |  \S2
+\S2'11'2'2''2  ->  \S1 \S2'11'2'2''2'
+\S2'11'2'2''2'  ->  B B \S2  |  \S2
+\S2'11'2'2'2  ->  C \S2'11'2'2'2'
+\S2'11'2'2'2'  ->  \S1 \S2'11'2'2'2''
+\S2'11'2'2'2''  ->  \S2 \S2'11'2'2'2'''2  |  B \S2'11'2'2'2'''
+\S2'11'2'2'2'''  ->  B \S2'11'2'2'2''''
+\S2'11'2'2'2''''  ->  \S2 \S2'11'2'2'2'''''
+\S2'11'2'2'2'''''  ->  \S1 \S2'11'2'2'2''''''
+\S2'11'2'2'2''''''  ->  B B \S2  |  \S2
+\S2'11'2'2'2'''2  ->  \S1 \S2'11'2'2'2'''2'
+\S2'11'2'2'2'''2'  ->  B B \S2  |  \S2
+\S2'12  ->  \S4 \S2'12'2  |  * \S2'12'
+\S2'12'  ->  * \S2'12''
+\S2'12''  ->  F \S2'12'''
+\S2'12'''  ->  \S4 \S2'12''''
+\S2'12''''  ->  \S3 \S2'12'''''2  |  - \S2'12'''''
+\S2'12'''''  ->  - \S2'12''''''
+\S2'12''''''  ->  T \S2'12'''''''
+\S2'12'''''''  ->  \S3 \S2'12''''''''
+\S2'12''''''''  ->  C \S2'12'''''''''2  |  \S1 \S2'12'''''''''
+\S2'12'''''''''  ->  \S2 \S2'12''''''''''2  |  B \S2'12''''''''''
+\S2'12''''''''''  ->  B \S2'12'''''''''''
+\S2'12'''''''''''  ->  \S2 \S2'12''''''''''''
+\S2'12''''''''''''  ->  \S1 \S2'12'''''''''''''
+\S2'12'''''''''''''  ->  B B \S2  |  \S2
+\S2'12''''''''''2  ->  \S1 \S2'12''''''''''2'
+\S2'12''''''''''2'  ->  B B \S2  |  \S2
+\S2'12'''''''''2  ->  C \S2'12'''''''''2'
+\S2'12'''''''''2'  ->  \S1 \S2'12'''''''''2''
+\S2'12'''''''''2''  ->  \S2 \S2'12'''''''''2'''2  |  B \S2'12'''''''''2'''
+\S2'12'''''''''2'''  ->  B \S2'12'''''''''2''''
+\S2'12'''''''''2''''  ->  \S2 \S2'12'''''''''2'''''
+\S2'12'''''''''2'''''  ->  \S1 \S2'12'''''''''2''''''
+\S2'12'''''''''2''''''  ->  B B \S2  |  \S2
+\S2'12'''''''''2'''2  ->  \S1 \S2'12'''''''''2'''2'
+\S2'12'''''''''2'''2'  ->  B B \S2  |  \S2
+\S2'12'''''2  ->  C \S2'12'''''2'2  |  \S1 \S2'12'''''2'
+\S2'12'''''2'  ->  \S2 \S2'12'''''2''2  |  B \S2'12'''''2''
+\S2'12'''''2''  ->  B \S2'12'''''2'''
+\S2'12'''''2'''  ->  \S2 \S2'12'''''2''''
+\S2'12'''''2''''  ->  \S1 \S2'12'''''2'''''
+\S2'12'''''2'''''  ->  B B \S2  |  \S2
+\S2'12'''''2''2  ->  \S1 \S2'12'''''2''2'
+\S2'12'''''2''2'  ->  B B \S2  |  \S2
+\S2'12'''''2'2  ->  C \S2'12'''''2'2'
+\S2'12'''''2'2'  ->  \S1 \S2'12'''''2'2''
+\S2'12'''''2'2''  ->  \S2 \S2'12'''''2'2'''2  |  B \S2'12'''''2'2'''
+\S2'12'''''2'2'''  ->  B \S2'12'''''2'2''''
+\S2'12'''''2'2''''  ->  \S2 \S2'12'''''2'2'''''
+\S2'12'''''2'2'''''  ->  \S1 \S2'12'''''2'2''''''
+\S2'12'''''2'2''''''  ->  B B \S2  |  \S2
+\S2'12'''''2'2'''2  ->  \S1 \S2'12'''''2'2'''2'
+\S2'12'''''2'2'''2'  ->  B B \S2  |  \S2
+\S2'12'2  ->  \S3 \S2'12'2'2  |  - \S2'12'2'
+\S2'12'2'  ->  - \S2'12'2''
+\S2'12'2''  ->  T \S2'12'2'''
+\S2'12'2'''  ->  \S3 \S2'12'2''''
+\S2'12'2''''  ->  C \S2'12'2'''''2  |  \S1 \S2'12'2'''''
+\S2'12'2'''''  ->  \S2 \S2'12'2''''''2  |  B \S2'12'2''''''
+\S2'12'2''''''  ->  B \S2'12'2'''''''
+\S2'12'2'''''''  ->  \S2 \S2'12'2''''''''
+\S2'12'2''''''''  ->  \S1 \S2'12'2'''''''''
+\S2'12'2'''''''''  ->  B B \S2  |  \S2
+\S2'12'2''''''2  ->  \S1 \S2'12'2''''''2'
+\S2'12'2''''''2'  ->  B B \S2  |  \S2
+\S2'12'2'''''2  ->  C \S2'12'2'''''2'
+\S2'12'2'''''2'  ->  \S1 \S2'12'2'''''2''
+\S2'12'2'''''2''  ->  \S2 \S2'12'2'''''2'''2  |  B \S2'12'2'''''2'''
+\S2'12'2'''''2'''  ->  B \S2'12'2'''''2''''
+\S2'12'2'''''2''''  ->  \S2 \S2'12'2'''''2'''''
+\S2'12'2'''''2'''''  ->  \S1 \S2'12'2'''''2''''''
+\S2'12'2'''''2''''''  ->  B B \S2  |  \S2
+\S2'12'2'''''2'''2  ->  \S1 \S2'12'2'''''2'''2'
+\S2'12'2'''''2'''2'  ->  B B \S2  |  \S2
+\S2'12'2'2  ->  C \S2'12'2'2'2  |  \S1 \S2'12'2'2'
+\S2'12'2'2'  ->  \S2 \S2'12'2'2''2  |  B \S2'12'2'2''
+\S2'12'2'2''  ->  B \S2'12'2'2'''
+\S2'12'2'2'''  ->  \S2 \S2'12'2'2''''
+\S2'12'2'2''''  ->  \S1 \S2'12'2'2'''''
+\S2'12'2'2'''''  ->  B B \S2  |  \S2
+\S2'12'2'2''2  ->  \S1 \S2'12'2'2''2'
+\S2'12'2'2''2'  ->  B B \S2  |  \S2
+\S2'12'2'2'2  ->  C \S2'12'2'2'2'
+\S2'12'2'2'2'  ->  \S1 \S2'12'2'2'2''
+\S2'12'2'2'2''  ->  \S2 \S2'12'2'2'2'''2  |  B \S2'12'2'2'2'''
+\S2'12'2'2'2'''  ->  B \S2'12'2'2'2''''
+\S2'12'2'2'2''''  ->  \S2 \S2'12'2'2'2'''''
+\S2'12'2'2'2'''''  ->  \S1 \S2'12'2'2'2''''''
+\S2'12'2'2'2''''''  ->  B B \S2  |  \S2
+\S2'12'2'2'2'''2  ->  \S1 \S2'12'2'2'2'''2'
+\S2'12'2'2'2'''2'  ->  B B \S2  |  \S2
+\S2'13  ->  \S2 \S2'13'2  |  \S1 \S2'13'
+\S2'13'  ->  \S2 \S2'13''2  |  B \S2'13''
+\S2'13''  ->  B \S2'13'''
+\S2'13'''  ->  \S2 \S2'13''''
+\S2'13''''  ->  \S1 \S2'13'''''
+\S2'13'''''  ->  B B \S2  |  \S2
+\S2'13''2  ->  \S1 \S2'13''2'
+\S2'13''2'  ->  B B \S2  |  \S2
+\S2'13'2  ->  \S1 \S2'13'2'
+\S2'13'2'  ->  B B \S2  |  \S2
+\S2'2  ->  * \S2'2'
+\S2'2'  ->  \S3 \S2'2''4  |  - \S2'2''3  |  \S4 \S2'2''2  |  * \S2'2''
+\S2'2''  ->  * \S2'2'''
+\S2'2'''  ->  F \S2'2''''
+\S2'2''''  ->  \S4 \S2'2'''''
+\S2'2'''''  ->  \S3 \S2'2''''''2  |  - \S2'2''''''
+\S2'2''''''  ->  - \S2'2'''''''
+\S2'2'''''''  ->  T \S2'2''''''''
+\S2'2''''''''  ->  \S3 \S2'2'''''''''
+\S2'2'''''''''  ->  C \S2'2''''''''''2  |  \S1 \S2'2''''''''''
+\S2'2''''''''''  ->  \S2 \S2'2'''''''''''2  |  B \S2'2'''''''''''
+\S2'2'''''''''''  ->  B \S2'2''''''''''''
+\S2'2''''''''''''  ->  \S2 \S2'2'''''''''''''
+\S2'2'''''''''''''  ->  \S1 \S2'2''''''''''''''
+\S2'2''''''''''''''  ->  B B \S2  |  \S2
+\S2'2'''''''''''2  ->  \S1 \S2'2'''''''''''2'
+\S2'2'''''''''''2'  ->  B B \S2  |  \S2
+\S2'2''''''''''2  ->  C \S2'2''''''''''2'
+\S2'2''''''''''2'  ->  \S1 \S2'2''''''''''2''
+\S2'2''''''''''2''  ->  \S2 \S2'2''''''''''2'''2  |  B \S2'2''''''''''2'''
+\S2'2''''''''''2'''  ->  B \S2'2''''''''''2''''
+\S2'2''''''''''2''''  ->  \S2 \S2'2''''''''''2'''''
+\S2'2''''''''''2'''''  ->  \S1 \S2'2''''''''''2''''''
+\S2'2''''''''''2''''''  ->  B B \S2  |  \S2
+\S2'2''''''''''2'''2  ->  \S1 \S2'2''''''''''2'''2'
+\S2'2''''''''''2'''2'  ->  B B \S2  |  \S2
+\S2'2''''''2  ->  C \S2'2''''''2'2  |  \S1 \S2'2''''''2'
+\S2'2''''''2'  ->  \S2 \S2'2''''''2''2  |  B \S2'2''''''2''
+\S2'2''''''2''  ->  B \S2'2''''''2'''
+\S2'2''''''2'''  ->  \S2 \S2'2''''''2''''
+\S2'2''''''2''''  ->  \S1 \S2'2''''''2'''''
+\S2'2''''''2'''''  ->  B B \S2  |  \S2
+\S2'2''''''2''2  ->  \S1 \S2'2''''''2''2'
+\S2'2''''''2''2'  ->  B B \S2  |  \S2
+\S2'2''''''2'2  ->  C \S2'2''''''2'2'
+\S2'2''''''2'2'  ->  \S1 \S2'2''''''2'2''
+\S2'2''''''2'2''  ->  \S2 \S2'2''''''2'2'''2  |  B \S2'2''''''2'2'''
+\S2'2''''''2'2'''  ->  B \S2'2''''''2'2''''
+\S2'2''''''2'2''''  ->  \S2 \S2'2''''''2'2'''''
+\S2'2''''''2'2'''''  ->  \S1 \S2'2''''''2'2''''''
+\S2'2''''''2'2''''''  ->  B B \S2  |  \S2
+\S2'2''''''2'2'''2  ->  \S1 \S2'2''''''2'2'''2'
+\S2'2''''''2'2'''2'  ->  B B \S2  |  \S2
+\S2'2''2  ->  \S3 \S2'2''2'2  |  - \S2'2''2'
+\S2'2''2'  ->  - \S2'2''2''
+\S2'2''2''  ->  T \S2'2''2'''
+\S2'2''2'''  ->  \S3 \S2'2''2''''
+\S2'2''2''''  ->  C \S2'2''2'''''2  |  \S1 \S2'2''2'''''
+\S2'2''2'''''  ->  \S2 \S2'2''2''''''2  |  B \S2'2''2''''''
+\S2'2''2''''''  ->  B \S2'2''2'''''''
+\S2'2''2'''''''  ->  \S2 \S2'2''2''''''''
+\S2'2''2''''''''  ->  \S1 \S2'2''2'''''''''
+\S2'2''2'''''''''  ->  B B \S2  |  \S2
+\S2'2''2''''''2  ->  \S1 \S2'2''2''''''2'
+\S2'2''2''''''2'  ->  B B \S2  |  \S2
+\S2'2''2'''''2  ->  C \S2'2''2'''''2'
+\S2'2''2'''''2'  ->  \S1 \S2'2''2'''''2''
+\S2'2''2'''''2''  ->  \S2 \S2'2''2'''''2'''2  |  B \S2'2''2'''''2'''
+\S2'2''2'''''2'''  ->  B \S2'2''2'''''2''''
+\S2'2''2'''''2''''  ->  \S2 \S2'2''2'''''2'''''
+\S2'2''2'''''2'''''  ->  \S1 \S2'2''2'''''2''''''
+\S2'2''2'''''2''''''  ->  B B \S2  |  \S2
+\S2'2''2'''''2'''2  ->  \S1 \S2'2''2'''''2'''2'
+\S2'2''2'''''2'''2'  ->  B B \S2  |  \S2
+\S2'2''2'2  ->  C \S2'2''2'2'2  |  \S1 \S2'2''2'2'
+\S2'2''2'2'  ->  \S2 \S2'2''2'2''2  |  B \S2'2''2'2''
+\S2'2''2'2''  ->  B \S2'2''2'2'''
+\S2'2''2'2'''  ->  \S2 \S2'2''2'2''''
+\S2'2''2'2''''  ->  \S1 \S2'2''2'2'''''
+\S2'2''2'2'''''  ->  B B \S2  |  \S2
+\S2'2''2'2''2  ->  \S1 \S2'2''2'2''2'
+\S2'2''2'2''2'  ->  B B \S2  |  \S2
+\S2'2''2'2'2  ->  C \S2'2''2'2'2'
+\S2'2''2'2'2'  ->  \S1 \S2'2''2'2'2''
+\S2'2''2'2'2''  ->  \S2 \S2'2''2'2'2'''2  |  B \S2'2''2'2'2'''
+\S2'2''2'2'2'''  ->  B \S2'2''2'2'2''''
+\S2'2''2'2'2''''  ->  \S2 \S2'2''2'2'2'''''
+\S2'2''2'2'2'''''  ->  \S1 \S2'2''2'2'2''''''
+\S2'2''2'2'2''''''  ->  B B \S2  |  \S2
+\S2'2''2'2'2'''2  ->  \S1 \S2'2''2'2'2'''2'
+\S2'2''2'2'2'''2'  ->  B B \S2  |  \S2
+\S2'2''3  ->  - \S2'2''3'
+\S2'2''3'  ->  T \S2'2''3''
+\S2'2''3''  ->  \S3 \S2'2''3'''
+\S2'2''3'''  ->  C \S2'2''3''''2  |  \S1 \S2'2''3''''
+\S2'2''3''''  ->  \S2 \S2'2''3'''''2  |  B \S2'2''3'''''
+\S2'2''3'''''  ->  B \S2'2''3''''''
+\S2'2''3''''''  ->  \S2 \S2'2''3'''''''
+\S2'2''3'''''''  ->  \S1 \S2'2''3''''''''
+\S2'2''3''''''''  ->  B B \S2  |  \S2
+\S2'2''3'''''2  ->  \S1 \S2'2''3'''''2'
+\S2'2''3'''''2'  ->  B B \S2  |  \S2
+\S2'2''3''''2  ->  C \S2'2''3''''2'
+\S2'2''3''''2'  ->  \S1 \S2'2''3''''2''
+\S2'2''3''''2''  ->  \S2 \S2'2''3''''2'''2  |  B \S2'2''3''''2'''
+\S2'2''3''''2'''  ->  B \S2'2''3''''2''''
+\S2'2''3''''2''''  ->  \S2 \S2'2''3''''2'''''
+\S2'2''3''''2'''''  ->  \S1 \S2'2''3''''2''''''
+\S2'2''3''''2''''''  ->  B B \S2  |  \S2
+\S2'2''3''''2'''2  ->  \S1 \S2'2''3''''2'''2'
+\S2'2''3''''2'''2'  ->  B B \S2  |  \S2
+\S2'2''4  ->  C \S2'2''4'2  |  \S1 \S2'2''4'
+\S2'2''4'  ->  \S2 \S2'2''4''2  |  B \S2'2''4''
+\S2'2''4''  ->  B \S2'2''4'''
+\S2'2''4'''  ->  \S2 \S2'2''4''''
+\S2'2''4''''  ->  \S1 \S2'2''4'''''
+\S2'2''4'''''  ->  B B \S2  |  \S2
+\S2'2''4''2  ->  \S1 \S2'2''4''2'
+\S2'2''4''2'  ->  B B \S2  |  \S2
+\S2'2''4'2  ->  C \S2'2''4'2'
+\S2'2''4'2'  ->  \S1 \S2'2''4'2''
+\S2'2''4'2''  ->  \S2 \S2'2''4'2'''2  |  B \S2'2''4'2'''
+\S2'2''4'2'''  ->  B \S2'2''4'2''''
+\S2'2''4'2''''  ->  \S2 \S2'2''4'2'''''
+\S2'2''4'2'''''  ->  \S1 \S2'2''4'2''''''
+\S2'2''4'2''''''  ->  B B \S2  |  \S2
+\S2'2''4'2'''2  ->  \S1 \S2'2''4'2'''2'
+\S2'2''4'2'''2'  ->  B B \S2  |  \S2
+\S2'3  ->  E \S2'3'
+\S2'3'  ->  ) \S2'3''
+\S2'3''  ->  \S4 \S2'3'''2  |  * \S2'3'''
+\S2'3'''  ->  * \S2'3''''
+\S2'3''''  ->  F \S2'3'''''
+\S2'3'''''  ->  \S4 \S2'3''''''
+\S2'3''''''  ->  \S3 \S2'3'''''''2  |  - \S2'3'''''''
+\S2'3'''''''  ->  - \S2'3''''''''
+\S2'3''''''''  ->  T \S2'3'''''''''
+\S2'3'''''''''  ->  \S3 \S2'3''''''''''
+\S2'3''''''''''  ->  C \S2'3'''''''''''2  |  \S1 \S2'3'''''''''''
+\S2'3'''''''''''  ->  \S2 \S2'3''''''''''''2  |  B \S2'3''''''''''''
+\S2'3''''''''''''  ->  B \S2'3'''''''''''''
+\S2'3'''''''''''''  ->  \S2 \S2'3''''''''''''''
+\S2'3''''''''''''''  ->  \S1 \S2'3'''''''''''''''
+\S2'3'''''''''''''''  ->  B B \S2  |  \S2
+\S2'3''''''''''''2  ->  \S1 \S2'3''''''''''''2'
+\S2'3''''''''''''2'  ->  B B \S2  |  \S2
+\S2'3'''''''''''2  ->  C \S2'3'''''''''''2'
+\S2'3'''''''''''2'  ->  \S1 \S2'3'''''''''''2''
+\S2'3'''''''''''2''  ->  \S2 \S2'3'''''''''''2'''2  |  B \S2'3'''''''''''2'''
+\S2'3'''''''''''2'''  ->  B \S2'3'''''''''''2''''
+\S2'3'''''''''''2''''  ->  \S2 \S2'3'''''''''''2'''''
+\S2'3'''''''''''2'''''  ->  \S1 \S2'3'''''''''''2''''''
+\S2'3'''''''''''2''''''  ->  B B \S2  |  \S2
+\S2'3'''''''''''2'''2  ->  \S1 \S2'3'''''''''''2'''2'
+\S2'3'''''''''''2'''2'  ->  B B \S2  |  \S2
+\S2'3'''''''2  ->  C \S2'3'''''''2'2  |  \S1 \S2'3'''''''2'
+\S2'3'''''''2'  ->  \S2 \S2'3'''''''2''2  |  B \S2'3'''''''2''
+\S2'3'''''''2''  ->  B \S2'3'''''''2'''
+\S2'3'''''''2'''  ->  \S2 \S2'3'''''''2''''
+\S2'3'''''''2''''  ->  \S1 \S2'3'''''''2'''''
+\S2'3'''''''2'''''  ->  B B \S2  |  \S2
+\S2'3'''''''2''2  ->  \S1 \S2'3'''''''2''2'
+\S2'3'''''''2''2'  ->  B B \S2  |  \S2
+\S2'3'''''''2'2  ->  C \S2'3'''''''2'2'
+\S2'3'''''''2'2'  ->  \S1 \S2'3'''''''2'2''
+\S2'3'''''''2'2''  ->  \S2 \S2'3'''''''2'2'''2  |  B \S2'3'''''''2'2'''
+\S2'3'''''''2'2'''  ->  B \S2'3'''''''2'2''''
+\S2'3'''''''2'2''''  ->  \S2 \S2'3'''''''2'2'''''
+\S2'3'''''''2'2'''''  ->  \S1 \S2'3'''''''2'2''''''
+\S2'3'''''''2'2''''''  ->  B B \S2  |  \S2
+\S2'3'''''''2'2'''2  ->  \S1 \S2'3'''''''2'2'''2'
+\S2'3'''''''2'2'''2'  ->  B B \S2  |  \S2
+\S2'3'''2  ->  \S3 \S2'3'''2'2  |  - \S2'3'''2'
+\S2'3'''2'  ->  - \S2'3'''2''
+\S2'3'''2''  ->  T \S2'3'''2'''
+\S2'3'''2'''  ->  \S3 \S2'3'''2''''
+\S2'3'''2''''  ->  C \S2'3'''2'''''2  |  \S1 \S2'3'''2'''''
+\S2'3'''2'''''  ->  \S2 \S2'3'''2''''''2  |  B \S2'3'''2''''''
+\S2'3'''2''''''  ->  B \S2'3'''2'''''''
+\S2'3'''2'''''''  ->  \S2 \S2'3'''2''''''''
+\S2'3'''2''''''''  ->  \S1 \S2'3'''2'''''''''
+\S2'3'''2'''''''''  ->  B B \S2  |  \S2
+\S2'3'''2''''''2  ->  \S1 \S2'3'''2''''''2'
+\S2'3'''2''''''2'  ->  B B \S2  |  \S2
+\S2'3'''2'''''2  ->  C \S2'3'''2'''''2'
+\S2'3'''2'''''2'  ->  \S1 \S2'3'''2'''''2''
+\S2'3'''2'''''2''  ->  \S2 \S2'3'''2'''''2'''2  |  B \S2'3'''2'''''2'''
+\S2'3'''2'''''2'''  ->  B \S2'3'''2'''''2''''
+\S2'3'''2'''''2''''  ->  \S2 \S2'3'''2'''''2'''''
+\S2'3'''2'''''2'''''  ->  \S1 \S2'3'''2'''''2''''''
+\S2'3'''2'''''2''''''  ->  B B \S2  |  \S2
+\S2'3'''2'''''2'''2  ->  \S1 \S2'3'''2'''''2'''2'
+\S2'3'''2'''''2'''2'  ->  B B \S2  |  \S2
+\S2'3'''2'2  ->  C \S2'3'''2'2'2  |  \S1 \S2'3'''2'2'
+\S2'3'''2'2'  ->  \S2 \S2'3'''2'2''2  |  B \S2'3'''2'2''
+\S2'3'''2'2''  ->  B \S2'3'''2'2'''
+\S2'3'''2'2'''  ->  \S2 \S2'3'''2'2''''
+\S2'3'''2'2''''  ->  \S1 \S2'3'''2'2'''''
+\S2'3'''2'2'''''  ->  B B \S2  |  \S2
+\S2'3'''2'2''2  ->  \S1 \S2'3'''2'2''2'
+\S2'3'''2'2''2'  ->  B B \S2  |  \S2
+\S2'3'''2'2'2  ->  C \S2'3'''2'2'2'
+\S2'3'''2'2'2'  ->  \S1 \S2'3'''2'2'2''
+\S2'3'''2'2'2''  ->  \S2 \S2'3'''2'2'2'''2  |  B \S2'3'''2'2'2'''
+\S2'3'''2'2'2'''  ->  B \S2'3'''2'2'2''''
+\S2'3'''2'2'2''''  ->  \S2 \S2'3'''2'2'2'''''
+\S2'3'''2'2'2'''''  ->  \S1 \S2'3'''2'2'2''''''
+\S2'3'''2'2'2''''''  ->  B B \S2  |  \S2
+\S2'3'''2'2'2'''2  ->  \S1 \S2'3'''2'2'2'''2'
+\S2'3'''2'2'2'''2'  ->  B B \S2  |  \S2
+\S2'4  ->  \S4 \S2'4'2  |  * \S2'4'
+\S2'4'  ->  * \S2'4''
+\S2'4''  ->  F \S2'4'''
+\S2'4'''  ->  \S4 \S2'4''''
+\S2'4''''  ->  \S3 \S2'4'''''2  |  - \S2'4'''''
+\S2'4'''''  ->  - \S2'4''''''
+\S2'4''''''  ->  T \S2'4'''''''
+\S2'4'''''''  ->  \S3 \S2'4''''''''
+\S2'4''''''''  ->  C \S2'4'''''''''2  |  \S1 \S2'4'''''''''
+\S2'4'''''''''  ->  \S2 \S2'4''''''''''2  |  B \S2'4''''''''''
+\S2'4''''''''''  ->  B \S2'4'''''''''''
+\S2'4'''''''''''  ->  \S2 \S2'4''''''''''''
+\S2'4''''''''''''  ->  \S1 \S2'4'''''''''''''
+\S2'4'''''''''''''  ->  B B \S2  |  \S2
+\S2'4''''''''''2  ->  \S1 \S2'4''''''''''2'
+\S2'4''''''''''2'  ->  B B \S2  |  \S2
+\S2'4'''''''''2  ->  C \S2'4'''''''''2'
+\S2'4'''''''''2'  ->  \S1 \S2'4'''''''''2''
+\S2'4'''''''''2''  ->  \S2 \S2'4'''''''''2'''2  |  B \S2'4'''''''''2'''
+\S2'4'''''''''2'''  ->  B \S2'4'''''''''2''''
+\S2'4'''''''''2''''  ->  \S2 \S2'4'''''''''2'''''
+\S2'4'''''''''2'''''  ->  \S1 \S2'4'''''''''2''''''
+\S2'4'''''''''2''''''  ->  B B \S2  |  \S2
+\S2'4'''''''''2'''2  ->  \S1 \S2'4'''''''''2'''2'
+\S2'4'''''''''2'''2'  ->  B B \S2  |  \S2
+\S2'4'''''2  ->  C \S2'4'''''2'2  |  \S1 \S2'4'''''2'
+\S2'4'''''2'  ->  \S2 \S2'4'''''2''2  |  B \S2'4'''''2''
+\S2'4'''''2''  ->  B \S2'4'''''2'''
+\S2'4'''''2'''  ->  \S2 \S2'4'''''2''''
+\S2'4'''''2''''  ->  \S1 \S2'4'''''2'''''
+\S2'4'''''2'''''  ->  B B \S2  |  \S2
+\S2'4'''''2''2  ->  \S1 \S2'4'''''2''2'
+\S2'4'''''2''2'  ->  B B \S2  |  \S2
+\S2'4'''''2'2  ->  C \S2'4'''''2'2'
+\S2'4'''''2'2'  ->  \S1 \S2'4'''''2'2''
+\S2'4'''''2'2''  ->  \S2 \S2'4'''''2'2'''2  |  B \S2'4'''''2'2'''
+\S2'4'''''2'2'''  ->  B \S2'4'''''2'2''''
+\S2'4'''''2'2''''  ->  \S2 \S2'4'''''2'2'''''
+\S2'4'''''2'2'''''  ->  \S1 \S2'4'''''2'2''''''
+\S2'4'''''2'2''''''  ->  B B \S2  |  \S2
+\S2'4'''''2'2'''2  ->  \S1 \S2'4'''''2'2'''2'
+\S2'4'''''2'2'''2'  ->  B B \S2  |  \S2
+\S2'4'2  ->  \S3 \S2'4'2'2  |  - \S2'4'2'
+\S2'4'2'  ->  - \S2'4'2''
+\S2'4'2''  ->  T \S2'4'2'''
+\S2'4'2'''  ->  \S3 \S2'4'2''''
+\S2'4'2''''  ->  C \S2'4'2'''''2  |  \S1 \S2'4'2'''''
+\S2'4'2'''''  ->  \S2 \S2'4'2''''''2  |  B \S2'4'2''''''
+\S2'4'2''''''  ->  B \S2'4'2'''''''
+\S2'4'2'''''''  ->  \S2 \S2'4'2''''''''
+\S2'4'2''''''''  ->  \S1 \S2'4'2'''''''''
+\S2'4'2'''''''''  ->  B B \S2  |  \S2
+\S2'4'2''''''2  ->  \S1 \S2'4'2''''''2'
+\S2'4'2''''''2'  ->  B B \S2  |  \S2
+\S2'4'2'''''2  ->  C \S2'4'2'''''2'
+\S2'4'2'''''2'  ->  \S1 \S2'4'2'''''2''
+\S2'4'2'''''2''  ->  \S2 \S2'4'2'''''2'''2  |  B \S2'4'2'''''2'''
+\S2'4'2'''''2'''  ->  B \S2'4'2'''''2''''
+\S2'4'2'''''2''''  ->  \S2 \S2'4'2'''''2'''''
+\S2'4'2'''''2'''''  ->  \S1 \S2'4'2'''''2''''''
+\S2'4'2'''''2''''''  ->  B B \S2  |  \S2
+\S2'4'2'''''2'''2  ->  \S1 \S2'4'2'''''2'''2'
+\S2'4'2'''''2'''2'  ->  B B \S2  |  \S2
+\S2'4'2'2  ->  C \S2'4'2'2'2  |  \S1 \S2'4'2'2'
+\S2'4'2'2'  ->  \S2 \S2'4'2'2''2  |  B \S2'4'2'2''
+\S2'4'2'2''  ->  B \S2'4'2'2'''
+\S2'4'2'2'''  ->  \S2 \S2'4'2'2''''
+\S2'4'2'2''''  ->  \S1 \S2'4'2'2'''''
+\S2'4'2'2'''''  ->  B B \S2  |  \S2
+\S2'4'2'2''2  ->  \S1 \S2'4'2'2''2'
+\S2'4'2'2''2'  ->  B B \S2  |  \S2
+\S2'4'2'2'2  ->  C \S2'4'2'2'2'
+\S2'4'2'2'2'  ->  \S1 \S2'4'2'2'2''
+\S2'4'2'2'2''  ->  \S2 \S2'4'2'2'2'''2  |  B \S2'4'2'2'2'''
+\S2'4'2'2'2'''  ->  B \S2'4'2'2'2''''
+\S2'4'2'2'2''''  ->  \S2 \S2'4'2'2'2'''''
+\S2'4'2'2'2'''''  ->  \S1 \S2'4'2'2'2''''''
+\S2'4'2'2'2''''''  ->  B B \S2  |  \S2
+\S2'4'2'2'2'''2  ->  \S1 \S2'4'2'2'2'''2'
+\S2'4'2'2'2'''2'  ->  B B \S2  |  \S2
+\S2'5  ->  \S4 \S2'5'2  |  * \S2'5'
+\S2'5'  ->  * \S2'5''
+\S2'5''  ->  F \S2'5'''
+\S2'5'''  ->  \S4 \S2'5''''
+\S2'5''''  ->  \S3 \S2'5'''''2  |  - \S2'5'''''
+\S2'5'''''  ->  - \S2'5''''''
+\S2'5''''''  ->  T \S2'5'''''''
+\S2'5'''''''  ->  \S3 \S2'5''''''''
+\S2'5''''''''  ->  C \S2'5'''''''''2  |  \S1 \S2'5'''''''''
+\S2'5'''''''''  ->  \S2 \S2'5''''''''''2  |  B \S2'5''''''''''
+\S2'5''''''''''  ->  B \S2'5'''''''''''
+\S2'5'''''''''''  ->  \S2 \S2'5''''''''''''
+\S2'5''''''''''''  ->  \S1 \S2'5'''''''''''''
+\S2'5'''''''''''''  ->  B B \S2  |  \S2
+\S2'5''''''''''2  ->  \S1 \S2'5''''''''''2'
+\S2'5''''''''''2'  ->  B B \S2  |  \S2
+\S2'5'''''''''2  ->  C \S2'5'''''''''2'
+\S2'5'''''''''2'  ->  \S1 \S2'5'''''''''2''
+\S2'5'''''''''2''  ->  \S2 \S2'5'''''''''2'''2  |  B \S2'5'''''''''2'''
+\S2'5'''''''''2'''  ->  B \S2'5'''''''''2''''
+\S2'5'''''''''2''''  ->  \S2 \S2'5'''''''''2'''''
+\S2'5'''''''''2'''''  ->  \S1 \S2'5'''''''''2''''''
+\S2'5'''''''''2''''''  ->  B B \S2  |  \S2
+\S2'5'''''''''2'''2  ->  \S1 \S2'5'''''''''2'''2'
+\S2'5'''''''''2'''2'  ->  B B \S2  |  \S2
+\S2'5'''''2  ->  C \S2'5'''''2'2  |  \S1 \S2'5'''''2'
+\S2'5'''''2'  ->  \S2 \S2'5'''''2''2  |  B \S2'5'''''2''
+\S2'5'''''2''  ->  B \S2'5'''''2'''
+\S2'5'''''2'''  ->  \S2 \S2'5'''''2''''
+\S2'5'''''2''''  ->  \S1 \S2'5'''''2'''''
+\S2'5'''''2'''''  ->  B B \S2  |  \S2
+\S2'5'''''2''2  ->  \S1 \S2'5'''''2''2'
+\S2'5'''''2''2'  ->  B B \S2  |  \S2
+\S2'5'''''2'2  ->  C \S2'5'''''2'2'
+\S2'5'''''2'2'  ->  \S1 \S2'5'''''2'2''
+\S2'5'''''2'2''  ->  \S2 \S2'5'''''2'2'''2  |  B \S2'5'''''2'2'''
+\S2'5'''''2'2'''  ->  B \S2'5'''''2'2''''
+\S2'5'''''2'2''''  ->  \S2 \S2'5'''''2'2'''''
+\S2'5'''''2'2'''''  ->  \S1 \S2'5'''''2'2''''''
+\S2'5'''''2'2''''''  ->  B B \S2  |  \S2
+\S2'5'''''2'2'''2  ->  \S1 \S2'5'''''2'2'''2'
+\S2'5'''''2'2'''2'  ->  B B \S2  |  \S2
+\S2'5'2  ->  \S3 \S2'5'2'2  |  - \S2'5'2'
+\S2'5'2'  ->  - \S2'5'2''
+\S2'5'2''  ->  T \S2'5'2'''
+\S2'5'2'''  ->  \S3 \S2'5'2''''
+\S2'5'2''''  ->  C \S2'5'2'''''2  |  \S1 \S2'5'2'''''
+\S2'5'2'''''  ->  \S2 \S2'5'2''''''2  |  B \S2'5'2''''''
+\S2'5'2''''''  ->  B \S2'5'2'''''''
+\S2'5'2'''''''  ->  \S2 \S2'5'2''''''''
+\S2'5'2''''''''  ->  \S1 \S2'5'2'''''''''
+\S2'5'2'''''''''  ->  B B \S2  |  \S2
+\S2'5'2''''''2  ->  \S1 \S2'5'2''''''2'
+\S2'5'2''''''2'  ->  B B \S2  |  \S2
+\S2'5'2'''''2  ->  C \S2'5'2'''''2'
+\S2'5'2'''''2'  ->  \S1 \S2'5'2'''''2''
+\S2'5'2'''''2''  ->  \S2 \S2'5'2'''''2'''2  |  B \S2'5'2'''''2'''
+\S2'5'2'''''2'''  ->  B \S2'5'2'''''2''''
+\S2'5'2'''''2''''  ->  \S2 \S2'5'2'''''2'''''
+\S2'5'2'''''2'''''  ->  \S1 \S2'5'2'''''2''''''
+\S2'5'2'''''2''''''  ->  B B \S2  |  \S2
+\S2'5'2'''''2'''2  ->  \S1 \S2'5'2'''''2'''2'
+\S2'5'2'''''2'''2'  ->  B B \S2  |  \S2
+\S2'5'2'2  ->  C \S2'5'2'2'2  |  \S1 \S2'5'2'2'
+\S2'5'2'2'  ->  \S2 \S2'5'2'2''2  |  B \S2'5'2'2''
+\S2'5'2'2''  ->  B \S2'5'2'2'''
+\S2'5'2'2'''  ->  \S2 \S2'5'2'2''''
+\S2'5'2'2''''  ->  \S1 \S2'5'2'2'''''
+\S2'5'2'2'''''  ->  B B \S2  |  \S2
+\S2'5'2'2''2  ->  \S1 \S2'5'2'2''2'
+\S2'5'2'2''2'  ->  B B \S2  |  \S2
+\S2'5'2'2'2  ->  C \S2'5'2'2'2'
+\S2'5'2'2'2'  ->  \S1 \S2'5'2'2'2''
+\S2'5'2'2'2''  ->  \S2 \S2'5'2'2'2'''2  |  B \S2'5'2'2'2'''
+\S2'5'2'2'2'''  ->  B \S2'5'2'2'2''''
+\S2'5'2'2'2''''  ->  \S2 \S2'5'2'2'2'''''
+\S2'5'2'2'2'''''  ->  \S1 \S2'5'2'2'2''''''
+\S2'5'2'2'2''''''  ->  B B \S2  |  \S2
+\S2'5'2'2'2'''2  ->  \S1 \S2'5'2'2'2'''2'
+\S2'5'2'2'2'''2'  ->  B B \S2  |  \S2
+\S2'6  ->  \S4 \S2'6'2  |  * \S2'6'
+\S2'6'  ->  * \S2'6''
+\S2'6''  ->  F \S2'6'''
+\S2'6'''  ->  \S4 \S2'6''''
+\S2'6''''  ->  \S3 \S2'6'''''2  |  - \S2'6'''''
+\S2'6'''''  ->  - \S2'6''''''
+\S2'6''''''  ->  T \S2'6'''''''
+\S2'6'''''''  ->  \S3 \S2'6''''''''
+\S2'6''''''''  ->  C \S2'6'''''''''2  |  \S1 \S2'6'''''''''
+\S2'6'''''''''  ->  \S2 \S2'6''''''''''2  |  B \S2'6''''''''''
+\S2'6''''''''''  ->  B \S2'6'''''''''''
+\S2'6'''''''''''  ->  \S2 \S2'6''''''''''''
+\S2'6''''''''''''  ->  \S1 \S2'6'''''''''''''
+\S2'6'''''''''''''  ->  B B \S2  |  \S2
+\S2'6''''''''''2  ->  \S1 \S2'6''''''''''2'
+\S2'6''''''''''2'  ->  B B \S2  |  \S2
+\S2'6'''''''''2  ->  C \S2'6'''''''''2'
+\S2'6'''''''''2'  ->  \S1 \S2'6'''''''''2''
+\S2'6'''''''''2''  ->  \S2 \S2'6'''''''''2'''2  |  B \S2'6'''''''''2'''
+\S2'6'''''''''2'''  ->  B \S2'6'''''''''2''''
+\S2'6'''''''''2''''  ->  \S2 \S2'6'''''''''2'''''
+\S2'6'''''''''2'''''  ->  \S1 \S2'6'''''''''2''''''
+\S2'6'''''''''2''''''  ->  B B \S2  |  \S2
+\S2'6'''''''''2'''2  ->  \S1 \S2'6'''''''''2'''2'
+\S2'6'''''''''2'''2'  ->  B B \S2  |  \S2
+\S2'6'''''2  ->  C \S2'6'''''2'2  |  \S1 \S2'6'''''2'
+\S2'6'''''2'  ->  \S2 \S2'6'''''2''2  |  B \S2'6'''''2''
+\S2'6'''''2''  ->  B \S2'6'''''2'''
+\S2'6'''''2'''  ->  \S2 \S2'6'''''2''''
+\S2'6'''''2''''  ->  \S1 \S2'6'''''2'''''
+\S2'6'''''2'''''  ->  B B \S2  |  \S2
+\S2'6'''''2''2  ->  \S1 \S2'6'''''2''2'
+\S2'6'''''2''2'  ->  B B \S2  |  \S2
+\S2'6'''''2'2  ->  C \S2'6'''''2'2'
+\S2'6'''''2'2'  ->  \S1 \S2'6'''''2'2''
+\S2'6'''''2'2''  ->  \S2 \S2'6'''''2'2'''2  |  B \S2'6'''''2'2'''
+\S2'6'''''2'2'''  ->  B \S2'6'''''2'2''''
+\S2'6'''''2'2''''  ->  \S2 \S2'6'''''2'2'''''
+\S2'6'''''2'2'''''  ->  \S1 \S2'6'''''2'2''''''
+\S2'6'''''2'2''''''  ->  B B \S2  |  \S2
+\S2'6'''''2'2'''2  ->  \S1 \S2'6'''''2'2'''2'
+\S2'6'''''2'2'''2'  ->  B B \S2  |  \S2
+\S2'6'2  ->  \S3 \S2'6'2'2  |  - \S2'6'2'
+\S2'6'2'  ->  - \S2'6'2''
+\S2'6'2''  ->  T \S2'6'2'''
+\S2'6'2'''  ->  \S3 \S2'6'2''''
+\S2'6'2''''  ->  C \S2'6'2'''''2  |  \S1 \S2'6'2'''''
+\S2'6'2'''''  ->  \S2 \S2'6'2''''''2  |  B \S2'6'2''''''
+\S2'6'2''''''  ->  B \S2'6'2'''''''
+\S2'6'2'''''''  ->  \S2 \S2'6'2''''''''
+\S2'6'2''''''''  ->  \S1 \S2'6'2'''''''''
+\S2'6'2'''''''''  ->  B B \S2  |  \S2
+\S2'6'2''''''2  ->  \S1 \S2'6'2''''''2'
+\S2'6'2''''''2'  ->  B B \S2  |  \S2
+\S2'6'2'''''2  ->  C \S2'6'2'''''2'
+\S2'6'2'''''2'  ->  \S1 \S2'6'2'''''2''
+\S2'6'2'''''2''  ->  \S2 \S2'6'2'''''2'''2  |  B \S2'6'2'''''2'''
+\S2'6'2'''''2'''  ->  B \S2'6'2'''''2''''
+\S2'6'2'''''2''''  ->  \S2 \S2'6'2'''''2'''''
+\S2'6'2'''''2'''''  ->  \S1 \S2'6'2'''''2''''''
+\S2'6'2'''''2''''''  ->  B B \S2  |  \S2
+\S2'6'2'''''2'''2  ->  \S1 \S2'6'2'''''2'''2'
+\S2'6'2'''''2'''2'  ->  B B \S2  |  \S2
+\S2'6'2'2  ->  C \S2'6'2'2'2  |  \S1 \S2'6'2'2'
+\S2'6'2'2'  ->  \S2 \S2'6'2'2''2  |  B \S2'6'2'2''
+\S2'6'2'2''  ->  B \S2'6'2'2'''
+\S2'6'2'2'''  ->  \S2 \S2'6'2'2''''
+\S2'6'2'2''''  ->  \S1 \S2'6'2'2'''''
+\S2'6'2'2'''''  ->  B B \S2  |  \S2
+\S2'6'2'2''2  ->  \S1 \S2'6'2'2''2'
+\S2'6'2'2''2'  ->  B B \S2  |  \S2
+\S2'6'2'2'2  ->  C \S2'6'2'2'2'
+\S2'6'2'2'2'  ->  \S1 \S2'6'2'2'2''
+\S2'6'2'2'2''  ->  \S2 \S2'6'2'2'2'''2  |  B \S2'6'2'2'2'''
+\S2'6'2'2'2'''  ->  B \S2'6'2'2'2''''
+\S2'6'2'2'2''''  ->  \S2 \S2'6'2'2'2'''''
+\S2'6'2'2'2'''''  ->  \S1 \S2'6'2'2'2''''''
+\S2'6'2'2'2''''''  ->  B B \S2  |  \S2
+\S2'6'2'2'2'''2  ->  \S1 \S2'6'2'2'2'''2'
+\S2'6'2'2'2'''2'  ->  B B \S2  |  \S2
+\S2'7  ->  \S4 \S2'7'2  |  * \S2'7'
+\S2'7'  ->  * \S2'7''
+\S2'7''  ->  F \S2'7'''
+\S2'7'''  ->  \S4 \S2'7''''
+\S2'7''''  ->  \S3 \S2'7'''''2  |  - \S2'7'''''
+\S2'7'''''  ->  - \S2'7''''''
+\S2'7''''''  ->  T \S2'7'''''''
+\S2'7'''''''  ->  \S3 \S2'7''''''''
+\S2'7''''''''  ->  C \S2'7'''''''''2  |  \S1 \S2'7'''''''''
+\S2'7'''''''''  ->  \S2 \S2'7''''''''''2  |  B \S2'7''''''''''
+\S2'7''''''''''  ->  B \S2'7'''''''''''
+\S2'7'''''''''''  ->  \S2 \S2'7''''''''''''
+\S2'7''''''''''''  ->  \S1 \S2'7'''''''''''''
+\S2'7'''''''''''''  ->  B B \S2  |  \S2
+\S2'7''''''''''2  ->  \S1 \S2'7''''''''''2'
+\S2'7''''''''''2'  ->  B B \S2  |  \S2
+\S2'7'''''''''2  ->  C \S2'7'''''''''2'
+\S2'7'''''''''2'  ->  \S1 \S2'7'''''''''2''
+\S2'7'''''''''2''  ->  \S2 \S2'7'''''''''2'''2  |  B \S2'7'''''''''2'''
+\S2'7'''''''''2'''  ->  B \S2'7'''''''''2''''
+\S2'7'''''''''2''''  ->  \S2 \S2'7'''''''''2'''''
+\S2'7'''''''''2'''''  ->  \S1 \S2'7'''''''''2''''''
+\S2'7'''''''''2''''''  ->  B B \S2  |  \S2
+\S2'7'''''''''2'''2  ->  \S1 \S2'7'''''''''2'''2'
+\S2'7'''''''''2'''2'  ->  B B \S2  |  \S2
+\S2'7'''''2  ->  C \S2'7'''''2'2  |  \S1 \S2'7'''''2'
+\S2'7'''''2'  ->  \S2 \S2'7'''''2''2  |  B \S2'7'''''2''
+\S2'7'''''2''  ->  B \S2'7'''''2'''
+\S2'7'''''2'''  ->  \S2 \S2'7'''''2''''
+\S2'7'''''2''''  ->  \S1 \S2'7'''''2'''''
+\S2'7'''''2'''''  ->  B B \S2  |  \S2
+\S2'7'''''2''2  ->  \S1 \S2'7'''''2''2'
+\S2'7'''''2''2'  ->  B B \S2  |  \S2
+\S2'7'''''2'2  ->  C \S2'7'''''2'2'
+\S2'7'''''2'2'  ->  \S1 \S2'7'''''2'2''
+\S2'7'''''2'2''  ->  \S2 \S2'7'''''2'2'''2  |  B \S2'7'''''2'2'''
+\S2'7'''''2'2'''  ->  B \S2'7'''''2'2''''
+\S2'7'''''2'2''''  ->  \S2 \S2'7'''''2'2'''''
+\S2'7'''''2'2'''''  ->  \S1 \S2'7'''''2'2''''''
+\S2'7'''''2'2''''''  ->  B B \S2  |  \S2
+\S2'7'''''2'2'''2  ->  \S1 \S2'7'''''2'2'''2'
+\S2'7'''''2'2'''2'  ->  B B \S2  |  \S2
+\S2'7'2  ->  \S3 \S2'7'2'2  |  - \S2'7'2'
+\S2'7'2'  ->  - \S2'7'2''
+\S2'7'2''  ->  T \S2'7'2'''
+\S2'7'2'''  ->  \S3 \S2'7'2''''
+\S2'7'2''''  ->  C \S2'7'2'''''2  |  \S1 \S2'7'2'''''
+\S2'7'2'''''  ->  \S2 \S2'7'2''''''2  |  B \S2'7'2''''''
+\S2'7'2''''''  ->  B \S2'7'2'''''''
+\S2'7'2'''''''  ->  \S2 \S2'7'2''''''''
+\S2'7'2''''''''  ->  \S1 \S2'7'2'''''''''
+\S2'7'2'''''''''  ->  B B \S2  |  \S2
+\S2'7'2''''''2  ->  \S1 \S2'7'2''''''2'
+\S2'7'2''''''2'  ->  B B \S2  |  \S2
+\S2'7'2'''''2  ->  C \S2'7'2'''''2'
+\S2'7'2'''''2'  ->  \S1 \S2'7'2'''''2''
+\S2'7'2'''''2''  ->  \S2 \S2'7'2'''''2'''2  |  B \S2'7'2'''''2'''
+\S2'7'2'''''2'''  ->  B \S2'7'2'''''2''''
+\S2'7'2'''''2''''  ->  \S2 \S2'7'2'''''2'''''
+\S2'7'2'''''2'''''  ->  \S1 \S2'7'2'''''2''''''
+\S2'7'2'''''2''''''  ->  B B \S2  |  \S2
+\S2'7'2'''''2'''2  ->  \S1 \S2'7'2'''''2'''2'
+\S2'7'2'''''2'''2'  ->  B B \S2  |  \S2
+\S2'7'2'2  ->  C \S2'7'2'2'2  |  \S1 \S2'7'2'2'
+\S2'7'2'2'  ->  \S2 \S2'7'2'2''2  |  B \S2'7'2'2''
+\S2'7'2'2''  ->  B \S2'7'2'2'''
+\S2'7'2'2'''  ->  \S2 \S2'7'2'2''''
+\S2'7'2'2''''  ->  \S1 \S2'7'2'2'''''
+\S2'7'2'2'''''  ->  B B \S2  |  \S2
+\S2'7'2'2''2  ->  \S1 \S2'7'2'2''2'
+\S2'7'2'2''2'  ->  B B \S2  |  \S2
+\S2'7'2'2'2  ->  C \S2'7'2'2'2'
+\S2'7'2'2'2'  ->  \S1 \S2'7'2'2'2''
+\S2'7'2'2'2''  ->  \S2 \S2'7'2'2'2'''2  |  B \S2'7'2'2'2'''
+\S2'7'2'2'2'''  ->  B \S2'7'2'2'2''''
+\S2'7'2'2'2''''  ->  \S2 \S2'7'2'2'2'''''
+\S2'7'2'2'2'''''  ->  \S1 \S2'7'2'2'2''''''
+\S2'7'2'2'2''''''  ->  B B \S2  |  \S2
+\S2'7'2'2'2'''2  ->  \S1 \S2'7'2'2'2'''2'
+\S2'7'2'2'2'''2'  ->  B B \S2  |  \S2
+\S2'8  ->  \S4 \S2'8'2  |  * \S2'8'
+\S2'8'  ->  * \S2'8''
+\S2'8''  ->  F \S2'8'''
+\S2'8'''  ->  \S4 \S2'8''''
+\S2'8''''  ->  \S3 \S2'8'''''2  |  - \S2'8'''''
+\S2'8'''''  ->  - \S2'8''''''
+\S2'8''''''  ->  T \S2'8'''''''
+\S2'8'''''''  ->  \S3 \S2'8''''''''
+\S2'8''''''''  ->  C \S2'8'''''''''2  |  \S1 \S2'8'''''''''
+\S2'8'''''''''  ->  \S2 \S2'8''''''''''2  |  B \S2'8''''''''''
+\S2'8''''''''''  ->  B \S2'8'''''''''''
+\S2'8'''''''''''  ->  \S2 \S2'8''''''''''''
+\S2'8''''''''''''  ->  \S1 \S2'8'''''''''''''
+\S2'8'''''''''''''  ->  B B \S2  |  \S2
+\S2'8''''''''''2  ->  \S1 \S2'8''''''''''2'
+\S2'8''''''''''2'  ->  B B \S2  |  \S2
+\S2'8'''''''''2  ->  C \S2'8'''''''''2'
+\S2'8'''''''''2'  ->  \S1 \S2'8'''''''''2''
+\S2'8'''''''''2''  ->  \S2 \S2'8'''''''''2'''2  |  B \S2'8'''''''''2'''
+\S2'8'''''''''2'''  ->  B \S2'8'''''''''2''''
+\S2'8'''''''''2''''  ->  \S2 \S2'8'''''''''2'''''
+\S2'8'''''''''2'''''  ->  \S1 \S2'8'''''''''2''''''
+\S2'8'''''''''2''''''  ->  B B \S2  |  \S2
+\S2'8'''''''''2'''2  ->  \S1 \S2'8'''''''''2'''2'
+\S2'8'''''''''2'''2'  ->  B B \S2  |  \S2
+\S2'8'''''2  ->  C \S2'8'''''2'2  |  \S1 \S2'8'''''2'
+\S2'8'''''2'  ->  \S2 \S2'8'''''2''2  |  B \S2'8'''''2''
+\S2'8'''''2''  ->  B \S2'8'''''2'''
+\S2'8'''''2'''  ->  \S2 \S2'8'''''2''''
+\S2'8'''''2''''  ->  \S1 \S2'8'''''2'''''
+\S2'8'''''2'''''  ->  B B \S2  |  \S2
+\S2'8'''''2''2  ->  \S1 \S2'8'''''2''2'
+\S2'8'''''2''2'  ->  B B \S2  |  \S2
+\S2'8'''''2'2  ->  C \S2'8'''''2'2'
+\S2'8'''''2'2'  ->  \S1 \S2'8'''''2'2''
+\S2'8'''''2'2''  ->  \S2 \S2'8'''''2'2'''2  |  B \S2'8'''''2'2'''
+\S2'8'''''2'2'''  ->  B \S2'8'''''2'2''''
+\S2'8'''''2'2''''  ->  \S2 \S2'8'''''2'2'''''
+\S2'8'''''2'2'''''  ->  \S1 \S2'8'''''2'2''''''
+\S2'8'''''2'2''''''  ->  B B \S2  |  \S2
+\S2'8'''''2'2'''2  ->  \S1 \S2'8'''''2'2'''2'
+\S2'8'''''2'2'''2'  ->  B B \S2  |  \S2
+\S2'8'2  ->  \S3 \S2'8'2'2  |  - \S2'8'2'
+\S2'8'2'  ->  - \S2'8'2''
+\S2'8'2''  ->  T \S2'8'2'''
+\S2'8'2'''  ->  \S3 \S2'8'2''''
+\S2'8'2''''  ->  C \S2'8'2'''''2  |  \S1 \S2'8'2'''''
+\S2'8'2'''''  ->  \S2 \S2'8'2''''''2  |  B \S2'8'2''''''
+\S2'8'2''''''  ->  B \S2'8'2'''''''
+\S2'8'2'''''''  ->  \S2 \S2'8'2''''''''
+\S2'8'2''''''''  ->  \S1 \S2'8'2'''''''''
+\S2'8'2'''''''''  ->  B B \S2  |  \S2
+\S2'8'2''''''2  ->  \S1 \S2'8'2''''''2'
+\S2'8'2''''''2'  ->  B B \S2  |  \S2
+\S2'8'2'''''2  ->  C \S2'8'2'''''2'
+\S2'8'2'''''2'  ->  \S1 \S2'8'2'''''2''
+\S2'8'2'''''2''  ->  \S2 \S2'8'2'''''2'''2  |  B \S2'8'2'''''2'''
+\S2'8'2'''''2'''  ->  B \S2'8'2'''''2''''
+\S2'8'2'''''2''''  ->  \S2 \S2'8'2'''''2'''''
+\S2'8'2'''''2'''''  ->  \S1 \S2'8'2'''''2''''''
+\S2'8'2'''''2''''''  ->  B B \S2  |  \S2
+\S2'8'2'''''2'''2  ->  \S1 \S2'8'2'''''2'''2'
+\S2'8'2'''''2'''2'  ->  B B \S2  |  \S2
+\S2'8'2'2  ->  C \S2'8'2'2'2  |  \S1 \S2'8'2'2'
+\S2'8'2'2'  ->  \S2 \S2'8'2'2''2  |  B \S2'8'2'2''
+\S2'8'2'2''  ->  B \S2'8'2'2'''
+\S2'8'2'2'''  ->  \S2 \S2'8'2'2''''
+\S2'8'2'2''''  ->  \S1 \S2'8'2'2'''''
+\S2'8'2'2'''''  ->  B B \S2  |  \S2
+\S2'8'2'2''2  ->  \S1 \S2'8'2'2''2'
+\S2'8'2'2''2'  ->  B B \S2  |  \S2
+\S2'8'2'2'2  ->  C \S2'8'2'2'2'
+\S2'8'2'2'2'  ->  \S1 \S2'8'2'2'2''
+\S2'8'2'2'2''  ->  \S2 \S2'8'2'2'2'''2  |  B \S2'8'2'2'2'''
+\S2'8'2'2'2'''  ->  B \S2'8'2'2'2''''
+\S2'8'2'2'2''''  ->  \S2 \S2'8'2'2'2'''''
+\S2'8'2'2'2'''''  ->  \S1 \S2'8'2'2'2''''''
+\S2'8'2'2'2''''''  ->  B B \S2  |  \S2
+\S2'8'2'2'2'''2  ->  \S1 \S2'8'2'2'2'''2'
+\S2'8'2'2'2'''2'  ->  B B \S2  |  \S2
+\S2'9  ->  \S4 \S2'9'2  |  * \S2'9'
+\S2'9'  ->  * \S2'9''
+\S2'9''  ->  F \S2'9'''
+\S2'9'''  ->  \S4 \S2'9''''
+\S2'9''''  ->  \S3 \S2'9'''''2  |  - \S2'9'''''
+\S2'9'''''  ->  - \S2'9''''''
+\S2'9''''''  ->  T \S2'9'''''''
+\S2'9'''''''  ->  \S3 \S2'9''''''''
+\S2'9''''''''  ->  C \S2'9'''''''''2  |  \S1 \S2'9'''''''''
+\S2'9'''''''''  ->  \S2 \S2'9''''''''''2  |  B \S2'9''''''''''
+\S2'9''''''''''  ->  B \S2'9'''''''''''
+\S2'9'''''''''''  ->  \S2 \S2'9''''''''''''
+\S2'9''''''''''''  ->  \S1 \S2'9'''''''''''''
+\S2'9'''''''''''''  ->  B B \S2  |  \S2
+\S2'9''''''''''2  ->  \S1 \S2'9''''''''''2'
+\S2'9''''''''''2'  ->  B B \S2  |  \S2
+\S2'9'''''''''2  ->  C \S2'9'''''''''2'
+\S2'9'''''''''2'  ->  \S1 \S2'9'''''''''2''
+\S2'9'''''''''2''  ->  \S2 \S2'9'''''''''2'''2  |  B \S2'9'''''''''2'''
+\S2'9'''''''''2'''  ->  B \S2'9'''''''''2''''
+\S2'9'''''''''2''''  ->  \S2 \S2'9'''''''''2'''''
+\S2'9'''''''''2'''''  ->  \S1 \S2'9'''''''''2''''''
+\S2'9'''''''''2''''''  ->  B B \S2  |  \S2
+\S2'9'''''''''2'''2  ->  \S1 \S2'9'''''''''2'''2'
+\S2'9'''''''''2'''2'  ->  B B \S2  |  \S2
+\S2'9'''''2  ->  C \S2'9'''''2'2  |  \S1 \S2'9'''''2'
+\S2'9'''''2'  ->  \S2 \S2'9'''''2''2  |  B \S2'9'''''2''
+\S2'9'''''2''  ->  B \S2'9'''''2'''
+\S2'9'''''2'''  ->  \S2 \S2'9'''''2''''
+\S2'9'''''2''''  ->  \S1 \S2'9'''''2'''''
+\S2'9'''''2'''''  ->  B B \S2  |  \S2
+\S2'9'''''2''2  ->  \S1 \S2'9'''''2''2'
+\S2'9'''''2''2'  ->  B B \S2  |  \S2
+\S2'9'''''2'2  ->  C \S2'9'''''2'2'
+\S2'9'''''2'2'  ->  \S1 \S2'9'''''2'2''
+\S2'9'''''2'2''  ->  \S2 \S2'9'''''2'2'''2  |  B \S2'9'''''2'2'''
+\S2'9'''''2'2'''  ->  B \S2'9'''''2'2''''
+\S2'9'''''2'2''''  ->  \S2 \S2'9'''''2'2'''''
+\S2'9'''''2'2'''''  ->  \S1 \S2'9'''''2'2''''''
+\S2'9'''''2'2''''''  ->  B B \S2  |  \S2
+\S2'9'''''2'2'''2  ->  \S1 \S2'9'''''2'2'''2'
+\S2'9'''''2'2'''2'  ->  B B \S2  |  \S2
+\S2'9'2  ->  \S3 \S2'9'2'2  |  - \S2'9'2'
+\S2'9'2'  ->  - \S2'9'2''
+\S2'9'2''  ->  T \S2'9'2'''
+\S2'9'2'''  ->  \S3 \S2'9'2''''
+\S2'9'2''''  ->  C \S2'9'2'''''2  |  \S1 \S2'9'2'''''
+\S2'9'2'''''  ->  \S2 \S2'9'2''''''2  |  B \S2'9'2''''''
+\S2'9'2''''''  ->  B \S2'9'2'''''''
+\S2'9'2'''''''  ->  \S2 \S2'9'2''''''''
+\S2'9'2''''''''  ->  \S1 \S2'9'2'''''''''
+\S2'9'2'''''''''  ->  B B \S2  |  \S2
+\S2'9'2''''''2  ->  \S1 \S2'9'2''''''2'
+\S2'9'2''''''2'  ->  B B \S2  |  \S2
+\S2'9'2'''''2  ->  C \S2'9'2'''''2'
+\S2'9'2'''''2'  ->  \S1 \S2'9'2'''''2''
+\S2'9'2'''''2''  ->  \S2 \S2'9'2'''''2'''2  |  B \S2'9'2'''''2'''
+\S2'9'2'''''2'''  ->  B \S2'9'2'''''2''''
+\S2'9'2'''''2''''  ->  \S2 \S2'9'2'''''2'''''
+\S2'9'2'''''2'''''  ->  \S1 \S2'9'2'''''2''''''
+\S2'9'2'''''2''''''  ->  B B \S2  |  \S2
+\S2'9'2'''''2'''2  ->  \S1 \S2'9'2'''''2'''2'
+\S2'9'2'''''2'''2'  ->  B B \S2  |  \S2
+\S2'9'2'2  ->  C \S2'9'2'2'2  |  \S1 \S2'9'2'2'
+\S2'9'2'2'  ->  \S2 \S2'9'2'2''2  |  B \S2'9'2'2''
+\S2'9'2'2''  ->  B \S2'9'2'2'''
+\S2'9'2'2'''  ->  \S2 \S2'9'2'2''''
+\S2'9'2'2''''  ->  \S1 \S2'9'2'2'''''
+\S2'9'2'2'''''  ->  B B \S2  |  \S2
+\S2'9'2'2''2  ->  \S1 \S2'9'2'2''2'
+\S2'9'2'2''2'  ->  B B \S2  |  \S2
+\S2'9'2'2'2  ->  C \S2'9'2'2'2'
+\S2'9'2'2'2'  ->  \S1 \S2'9'2'2'2''
+\S2'9'2'2'2''  ->  \S2 \S2'9'2'2'2'''2  |  B \S2'9'2'2'2'''
+\S2'9'2'2'2'''  ->  B \S2'9'2'2'2''''
+\S2'9'2'2'2''''  ->  \S2 \S2'9'2'2'2'''''
+\S2'9'2'2'2'''''  ->  \S1 \S2'9'2'2'2''''''
+\S2'9'2'2'2''''''  ->  B B \S2  |  \S2
+\S2'9'2'2'2'''2  ->  \S1 \S2'9'2'2'2'''2'
+\S2'9'2'2'2'''2'  ->  B B \S2  |  \S2
+\S3  ->  \eps  |  - - T - - T \S3
+\S4  ->  \eps  |  * * F * * F \S4
 
-String to test:
-"1-(5*(5-2))"
-
-
-Start evaluate substrings with length 1
-
-Evaluate substring [0, 0] - "1"
-Answers found:
-E -> 1
-T -> 1
-F -> 1
-\S0 -> 1
-
-Evaluate substring [1, 1] - "-"
-Answers found:
-\S1 -> -
-
-Evaluate substring [2, 2] - "("
-Answers found:
-\S2 -> (
-
-Evaluate substring [3, 3] - "5"
-Answers found:
-E -> 5
-T -> 5
-F -> 5
-\S0 -> 5
-
-Evaluate substring [4, 4] - "*"
-Answers found:
-\S4 -> *
-
-Evaluate substring [5, 5] - "("
-Answers found:
-\S2 -> (
-
-Evaluate substring [6, 6] - "5"
-Answers found:
-E -> 5
-T -> 5
-F -> 5
-\S0 -> 5
-
-Evaluate substring [7, 7] - "-"
-Answers found:
-\S1 -> -
-
-Evaluate substring [8, 8] - "2"
-Answers found:
-E -> 2
-T -> 2
-F -> 2
-\S0 -> 2
-
-Evaluate substring [9, 9] - ")"
-Answers found:
-\S3 -> )
-
-Evaluate substring [10, 10] - ")"
-Answers found:
-\S3 -> )
-
-
-Start evaluate substrings with length 2
-
-Evaluate substring [0, 1] - "1-"
-Try to process [0, 0] + [1, 1] or [E T F \S0] + [\S1]
-No answers found
-
-Evaluate substring [1, 2] - "-("
-Try to process [1, 1] + [2, 2] or [\S1] + [\S2]
-No answers found
-
-Evaluate substring [2, 3] - "(5"
-Try to process [2, 2] + [3, 3] or [\S2] + [E T F \S0]
-No answers found
-
-Evaluate substring [3, 4] - "5*"
-Try to process [3, 3] + [4, 4] or [E T F \S0] + [\S4]
-No answers found
-
-Evaluate substring [4, 5] - "*("
-Try to process [4, 4] + [5, 5] or [\S4] + [\S2]
-No answers found
-
-Evaluate substring [5, 6] - "(5"
-Try to process [5, 5] + [6, 6] or [\S2] + [E T F \S0]
-No answers found
-
-Evaluate substring [6, 7] - "5-"
-Try to process [6, 6] + [7, 7] or [E T F \S0] + [\S1]
-No answers found
-
-Evaluate substring [7, 8] - "-2"
-Try to process [7, 7] + [8, 8] or [\S1] + [E T F \S0]
-Answers found:
-\S5 -> \S1 T
-
-Evaluate substring [8, 9] - "2)"
-Try to process [8, 8] + [9, 9] or [E T F \S0] + [\S3]
-Answers found:
-\S6 -> E \S3
-
-Evaluate substring [9, 10] - "))"
-Try to process [9, 9] + [10, 10] or [\S3] + [\S3]
-No answers found
-
-
-Start evaluate substrings with length 3
-
-Evaluate substring [0, 2] - "1-("
-Try to process [0, 0] + [1, 2] or [E T F \S0] + []
-No answers found
-Try to process [0, 1] + [2, 2] or [] + [\S2]
-No answers found
-
-Evaluate substring [1, 3] - "-(5"
-Try to process [1, 1] + [2, 3] or [\S1] + []
-No answers found
-Try to process [1, 2] + [3, 3] or [] + [E T F \S0]
-No answers found
-
-Evaluate substring [2, 4] - "(5*"
-Try to process [2, 2] + [3, 4] or [\S2] + []
-No answers found
-Try to process [2, 3] + [4, 4] or [] + [\S4]
-No answers found
-
-Evaluate substring [3, 5] - "5*("
-Try to process [3, 3] + [4, 5] or [E T F \S0] + []
-No answers found
-Try to process [3, 4] + [5, 5] or [] + [\S2]
-No answers found
-
-Evaluate substring [4, 6] - "*(5"
-Try to process [4, 4] + [5, 6] or [\S4] + []
-No answers found
-Try to process [4, 5] + [6, 6] or [] + [E T F \S0]
-No answers found
-
-Evaluate substring [5, 7] - "(5-"
-Try to process [5, 5] + [6, 7] or [\S2] + []
-No answers found
-Try to process [5, 6] + [7, 7] or [] + [\S1]
-No answers found
-
-Evaluate substring [6, 8] - "5-2"
-Try to process [6, 6] + [7, 8] or [E T F \S0] + [\S5]
-Answers found:
-E -> E \S5
-\S0 -> E \S5
-Try to process [6, 7] + [8, 8] or [] + [E T F \S0]
-No answers found
-
-Evaluate substring [7, 9] - "-2)"
-Try to process [7, 7] + [8, 9] or [\S1] + [\S6]
-No answers found
-Try to process [7, 8] + [9, 9] or [\S5] + [\S3]
-No answers found
-
-Evaluate substring [8, 10] - "2))"
-Try to process [8, 8] + [9, 10] or [E T F \S0] + []
-No answers found
-Try to process [8, 9] + [10, 10] or [\S6] + [\S3]
-No answers found
-
-
-Start evaluate substrings with length 4
-
-Evaluate substring [0, 3] - "1-(5"
-Try to process [0, 0] + [1, 3] or [E T F \S0] + []
-No answers found
-Try to process [0, 1] + [2, 3] or [] + []
-No answers found
-Try to process [0, 2] + [3, 3] or [] + [E T F \S0]
-No answers found
-
-Evaluate substring [1, 4] - "-(5*"
-Try to process [1, 1] + [2, 4] or [\S1] + []
-No answers found
-Try to process [1, 2] + [3, 4] or [] + []
-No answers found
-Try to process [1, 3] + [4, 4] or [] + [\S4]
-No answers found
-
-Evaluate substring [2, 5] - "(5*("
-Try to process [2, 2] + [3, 5] or [\S2] + []
-No answers found
-Try to process [2, 3] + [4, 5] or [] + []
-No answers found
-Try to process [2, 4] + [5, 5] or [] + [\S2]
-No answers found
-
-Evaluate substring [3, 6] - "5*(5"
-Try to process [3, 3] + [4, 6] or [E T F \S0] + []
-No answers found
-Try to process [3, 4] + [5, 6] or [] + []
-No answers found
-Try to process [3, 5] + [6, 6] or [] + [E T F \S0]
-No answers found
-
-Evaluate substring [4, 7] - "*(5-"
-Try to process [4, 4] + [5, 7] or [\S4] + []
-No answers found
-Try to process [4, 5] + [6, 7] or [] + []
-No answers found
-Try to process [4, 6] + [7, 7] or [] + [\S1]
-No answers found
-
-Evaluate substring [5, 8] - "(5-2"
-Try to process [5, 5] + [6, 8] or [\S2] + [E \S0]
-No answers found
-Try to process [5, 6] + [7, 8] or [] + [\S5]
-No answers found
-Try to process [5, 7] + [8, 8] or [] + [E T F \S0]
-No answers found
-
-Evaluate substring [6, 9] - "5-2)"
-Try to process [6, 6] + [7, 9] or [E T F \S0] + []
-No answers found
-Try to process [6, 7] + [8, 9] or [] + [\S6]
-No answers found
-Try to process [6, 8] + [9, 9] or [E \S0] + [\S3]
-Answers found:
-\S6 -> E \S3
-
-Evaluate substring [7, 10] - "-2))"
-Try to process [7, 7] + [8, 10] or [\S1] + []
-No answers found
-Try to process [7, 8] + [9, 10] or [\S5] + []
-No answers found
-Try to process [7, 9] + [10, 10] or [] + [\S3]
-No answers found
-
-
-Start evaluate substrings with length 5
-
-Evaluate substring [0, 4] - "1-(5*"
-Try to process [0, 0] + [1, 4] or [E T F \S0] + []
-No answers found
-Try to process [0, 1] + [2, 4] or [] + []
-No answers found
-Try to process [0, 2] + [3, 4] or [] + []
-No answers found
-Try to process [0, 3] + [4, 4] or [] + [\S4]
-No answers found
-
-Evaluate substring [1, 5] - "-(5*("
-Try to process [1, 1] + [2, 5] or [\S1] + []
-No answers found
-Try to process [1, 2] + [3, 5] or [] + []
-No answers found
-Try to process [1, 3] + [4, 5] or [] + []
-No answers found
-Try to process [1, 4] + [5, 5] or [] + [\S2]
-No answers found
-
-Evaluate substring [2, 6] - "(5*(5"
-Try to process [2, 2] + [3, 6] or [\S2] + []
-No answers found
-Try to process [2, 3] + [4, 6] or [] + []
-No answers found
-Try to process [2, 4] + [5, 6] or [] + []
-No answers found
-Try to process [2, 5] + [6, 6] or [] + [E T F \S0]
-No answers found
-
-Evaluate substring [3, 7] - "5*(5-"
-Try to process [3, 3] + [4, 7] or [E T F \S0] + []
-No answers found
-Try to process [3, 4] + [5, 7] or [] + []
-No answers found
-Try to process [3, 5] + [6, 7] or [] + []
-No answers found
-Try to process [3, 6] + [7, 7] or [] + [\S1]
-No answers found
-
-Evaluate substring [4, 8] - "*(5-2"
-Try to process [4, 4] + [5, 8] or [\S4] + []
-No answers found
-Try to process [4, 5] + [6, 8] or [] + [E \S0]
-No answers found
-Try to process [4, 6] + [7, 8] or [] + [\S5]
-No answers found
-Try to process [4, 7] + [8, 8] or [] + [E T F \S0]
-No answers found
-
-Evaluate substring [5, 9] - "(5-2)"
-Try to process [5, 5] + [6, 9] or [\S2] + [\S6]
-Answers found:
-E -> \S2 \S6
-F -> \S2 \S6
-T -> \S2 \S6
-\S0 -> \S2 \S6
-Try to process [5, 6] + [7, 9] or [] + []
-No answers found
-Try to process [5, 7] + [8, 9] or [] + [\S6]
-No answers found
-Try to process [5, 8] + [9, 9] or [] + [\S3]
-No answers found
-
-Evaluate substring [6, 10] - "5-2))"
-Try to process [6, 6] + [7, 10] or [E T F \S0] + []
-No answers found
-Try to process [6, 7] + [8, 10] or [] + []
-No answers found
-Try to process [6, 8] + [9, 10] or [E \S0] + []
-No answers found
-Try to process [6, 9] + [10, 10] or [\S6] + [\S3]
-No answers found
-
-
-Start evaluate substrings with length 6
-
-Evaluate substring [0, 5] - "1-(5*("
-Try to process [0, 0] + [1, 5] or [E T F \S0] + []
-No answers found
-Try to process [0, 1] + [2, 5] or [] + []
-No answers found
-Try to process [0, 2] + [3, 5] or [] + []
-No answers found
-Try to process [0, 3] + [4, 5] or [] + []
-No answers found
-Try to process [0, 4] + [5, 5] or [] + [\S2]
-No answers found
-
-Evaluate substring [1, 6] - "-(5*(5"
-Try to process [1, 1] + [2, 6] or [\S1] + []
-No answers found
-Try to process [1, 2] + [3, 6] or [] + []
-No answers found
-Try to process [1, 3] + [4, 6] or [] + []
-No answers found
-Try to process [1, 4] + [5, 6] or [] + []
-No answers found
-Try to process [1, 5] + [6, 6] or [] + [E T F \S0]
-No answers found
-
-Evaluate substring [2, 7] - "(5*(5-"
-Try to process [2, 2] + [3, 7] or [\S2] + []
-No answers found
-Try to process [2, 3] + [4, 7] or [] + []
-No answers found
-Try to process [2, 4] + [5, 7] or [] + []
-No answers found
-Try to process [2, 5] + [6, 7] or [] + []
-No answers found
-Try to process [2, 6] + [7, 7] or [] + [\S1]
-No answers found
-
-Evaluate substring [3, 8] - "5*(5-2"
-Try to process [3, 3] + [4, 8] or [E T F \S0] + []
-No answers found
-Try to process [3, 4] + [5, 8] or [] + []
-No answers found
-Try to process [3, 5] + [6, 8] or [] + [E \S0]
-No answers found
-Try to process [3, 6] + [7, 8] or [] + [\S5]
-No answers found
-Try to process [3, 7] + [8, 8] or [] + [E T F \S0]
-No answers found
-
-Evaluate substring [4, 9] - "*(5-2)"
-Try to process [4, 4] + [5, 9] or [\S4] + [E F T \S0]
-Answers found:
-\S7 -> \S4 F
-Try to process [4, 5] + [6, 9] or [] + [\S6]
-No answers found
-Try to process [4, 6] + [7, 9] or [] + []
-No answers found
-Try to process [4, 7] + [8, 9] or [] + [\S6]
-No answers found
-Try to process [4, 8] + [9, 9] or [] + [\S3]
-No answers found
-
-Evaluate substring [5, 10] - "(5-2))"
-Try to process [5, 5] + [6, 10] or [\S2] + []
-No answers found
-Try to process [5, 6] + [7, 10] or [] + []
-No answers found
-Try to process [5, 7] + [8, 10] or [] + []
-No answers found
-Try to process [5, 8] + [9, 10] or [] + []
-No answers found
-Try to process [5, 9] + [10, 10] or [E F T \S0] + [\S3]
-Answers found:
-\S6 -> E \S3
-
-
-Start evaluate substrings with length 7
-
-Evaluate substring [0, 6] - "1-(5*(5"
-Try to process [0, 0] + [1, 6] or [E T F \S0] + []
-No answers found
-Try to process [0, 1] + [2, 6] or [] + []
-No answers found
-Try to process [0, 2] + [3, 6] or [] + []
-No answers found
-Try to process [0, 3] + [4, 6] or [] + []
-No answers found
-Try to process [0, 4] + [5, 6] or [] + []
-No answers found
-Try to process [0, 5] + [6, 6] or [] + [E T F \S0]
-No answers found
-
-Evaluate substring [1, 7] - "-(5*(5-"
-Try to process [1, 1] + [2, 7] or [\S1] + []
-No answers found
-Try to process [1, 2] + [3, 7] or [] + []
-No answers found
-Try to process [1, 3] + [4, 7] or [] + []
-No answers found
-Try to process [1, 4] + [5, 7] or [] + []
-No answers found
-Try to process [1, 5] + [6, 7] or [] + []
-No answers found
-Try to process [1, 6] + [7, 7] or [] + [\S1]
-No answers found
-
-Evaluate substring [2, 8] - "(5*(5-2"
-Try to process [2, 2] + [3, 8] or [\S2] + []
-No answers found
-Try to process [2, 3] + [4, 8] or [] + []
-No answers found
-Try to process [2, 4] + [5, 8] or [] + []
-No answers found
-Try to process [2, 5] + [6, 8] or [] + [E \S0]
-No answers found
-Try to process [2, 6] + [7, 8] or [] + [\S5]
-No answers found
-Try to process [2, 7] + [8, 8] or [] + [E T F \S0]
-No answers found
-
-Evaluate substring [3, 9] - "5*(5-2)"
-Try to process [3, 3] + [4, 9] or [E T F \S0] + [\S7]
-Answers found:
-E -> T \S7
-T -> T \S7
-\S0 -> T \S7
-Try to process [3, 4] + [5, 9] or [] + [E F T \S0]
-No answers found
-Try to process [3, 5] + [6, 9] or [] + [\S6]
-No answers found
-Try to process [3, 6] + [7, 9] or [] + []
-No answers found
-Try to process [3, 7] + [8, 9] or [] + [\S6]
-No answers found
-Try to process [3, 8] + [9, 9] or [] + [\S3]
-No answers found
-
-Evaluate substring [4, 10] - "*(5-2))"
-Try to process [4, 4] + [5, 10] or [\S4] + [\S6]
-No answers found
-Try to process [4, 5] + [6, 10] or [] + []
-No answers found
-Try to process [4, 6] + [7, 10] or [] + []
-No answers found
-Try to process [4, 7] + [8, 10] or [] + []
-No answers found
-Try to process [4, 8] + [9, 10] or [] + []
-No answers found
-Try to process [4, 9] + [10, 10] or [\S7] + [\S3]
-No answers found
-
-
-Start evaluate substrings with length 8
-
-Evaluate substring [0, 7] - "1-(5*(5-"
-Try to process [0, 0] + [1, 7] or [E T F \S0] + []
-No answers found
-Try to process [0, 1] + [2, 7] or [] + []
-No answers found
-Try to process [0, 2] + [3, 7] or [] + []
-No answers found
-Try to process [0, 3] + [4, 7] or [] + []
-No answers found
-Try to process [0, 4] + [5, 7] or [] + []
-No answers found
-Try to process [0, 5] + [6, 7] or [] + []
-No answers found
-Try to process [0, 6] + [7, 7] or [] + [\S1]
-No answers found
-
-Evaluate substring [1, 8] - "-(5*(5-2"
-Try to process [1, 1] + [2, 8] or [\S1] + []
-No answers found
-Try to process [1, 2] + [3, 8] or [] + []
-No answers found
-Try to process [1, 3] + [4, 8] or [] + []
-No answers found
-Try to process [1, 4] + [5, 8] or [] + []
-No answers found
-Try to process [1, 5] + [6, 8] or [] + [E \S0]
-No answers found
-Try to process [1, 6] + [7, 8] or [] + [\S5]
-No answers found
-Try to process [1, 7] + [8, 8] or [] + [E T F \S0]
-No answers found
-
-Evaluate substring [2, 9] - "(5*(5-2)"
-Try to process [2, 2] + [3, 9] or [\S2] + [E T \S0]
-No answers found
-Try to process [2, 3] + [4, 9] or [] + [\S7]
-No answers found
-Try to process [2, 4] + [5, 9] or [] + [E F T \S0]
-No answers found
-Try to process [2, 5] + [6, 9] or [] + [\S6]
-No answers found
-Try to process [2, 6] + [7, 9] or [] + []
-No answers found
-Try to process [2, 7] + [8, 9] or [] + [\S6]
-No answers found
-Try to process [2, 8] + [9, 9] or [] + [\S3]
-No answers found
-
-Evaluate substring [3, 10] - "5*(5-2))"
-Try to process [3, 3] + [4, 10] or [E T F \S0] + []
-No answers found
-Try to process [3, 4] + [5, 10] or [] + [\S6]
-No answers found
-Try to process [3, 5] + [6, 10] or [] + []
-No answers found
-Try to process [3, 6] + [7, 10] or [] + []
-No answers found
-Try to process [3, 7] + [8, 10] or [] + []
-No answers found
-Try to process [3, 8] + [9, 10] or [] + []
-No answers found
-Try to process [3, 9] + [10, 10] or [E T \S0] + [\S3]
-Answers found:
-\S6 -> E \S3
-
-
-Start evaluate substrings with length 9
-
-Evaluate substring [0, 8] - "1-(5*(5-2"
-Try to process [0, 0] + [1, 8] or [E T F \S0] + []
-No answers found
-Try to process [0, 1] + [2, 8] or [] + []
-No answers found
-Try to process [0, 2] + [3, 8] or [] + []
-No answers found
-Try to process [0, 3] + [4, 8] or [] + []
-No answers found
-Try to process [0, 4] + [5, 8] or [] + []
-No answers found
-Try to process [0, 5] + [6, 8] or [] + [E \S0]
-No answers found
-Try to process [0, 6] + [7, 8] or [] + [\S5]
-No answers found
-Try to process [0, 7] + [8, 8] or [] + [E T F \S0]
-No answers found
-
-Evaluate substring [1, 9] - "-(5*(5-2)"
-Try to process [1, 1] + [2, 9] or [\S1] + []
-No answers found
-Try to process [1, 2] + [3, 9] or [] + [E T \S0]
-No answers found
-Try to process [1, 3] + [4, 9] or [] + [\S7]
-No answers found
-Try to process [1, 4] + [5, 9] or [] + [E F T \S0]
-No answers found
-Try to process [1, 5] + [6, 9] or [] + [\S6]
-No answers found
-Try to process [1, 6] + [7, 9] or [] + []
-No answers found
-Try to process [1, 7] + [8, 9] or [] + [\S6]
-No answers found
-Try to process [1, 8] + [9, 9] or [] + [\S3]
-No answers found
-
-Evaluate substring [2, 10] - "(5*(5-2))"
-Try to process [2, 2] + [3, 10] or [\S2] + [\S6]
-Answers found:
-E -> \S2 \S6
-F -> \S2 \S6
-T -> \S2 \S6
-\S0 -> \S2 \S6
-Try to process [2, 3] + [4, 10] or [] + []
-No answers found
-Try to process [2, 4] + [5, 10] or [] + [\S6]
-No answers found
-Try to process [2, 5] + [6, 10] or [] + []
-No answers found
-Try to process [2, 6] + [7, 10] or [] + []
-No answers found
-Try to process [2, 7] + [8, 10] or [] + []
-No answers found
-Try to process [2, 8] + [9, 10] or [] + []
-No answers found
-Try to process [2, 9] + [10, 10] or [] + [\S3]
-No answers found
-
-
-Start evaluate substrings with length 10
-
-Evaluate substring [0, 9] - "1-(5*(5-2)"
-Try to process [0, 0] + [1, 9] or [E T F \S0] + []
-No answers found
-Try to process [0, 1] + [2, 9] or [] + []
-No answers found
-Try to process [0, 2] + [3, 9] or [] + [E T \S0]
-No answers found
-Try to process [0, 3] + [4, 9] or [] + [\S7]
-No answers found
-Try to process [0, 4] + [5, 9] or [] + [E F T \S0]
-No answers found
-Try to process [0, 5] + [6, 9] or [] + [\S6]
-No answers found
-Try to process [0, 6] + [7, 9] or [] + []
-No answers found
-Try to process [0, 7] + [8, 9] or [] + [\S6]
-No answers found
-Try to process [0, 8] + [9, 9] or [] + [\S3]
-No answers found
-
-Evaluate substring [1, 10] - "-(5*(5-2))"
-Try to process [1, 1] + [2, 10] or [\S1] + [E F T \S0]
-Answers found:
-\S5 -> \S1 T
-Try to process [1, 2] + [3, 10] or [] + [\S6]
-No answers found
-Try to process [1, 3] + [4, 10] or [] + []
-No answers found
-Try to process [1, 4] + [5, 10] or [] + [\S6]
-No answers found
-Try to process [1, 5] + [6, 10] or [] + []
-No answers found
-Try to process [1, 6] + [7, 10] or [] + []
-No answers found
-Try to process [1, 7] + [8, 10] or [] + []
-No answers found
-Try to process [1, 8] + [9, 10] or [] + []
-No answers found
-Try to process [1, 9] + [10, 10] or [] + [\S3]
-No answers found
-
-
-Start evaluate substrings with length 11
-
-Evaluate substring [0, 10] - "1-(5*(5-2))"
-Try to process [0, 0] + [1, 10] or [E T F \S0] + [\S5]
-Answers found:
-E -> E \S5
-\S0 -> E \S5
-Try to process [0, 1] + [2, 10] or [] + [E F T \S0]
-No answers found
-Try to process [0, 2] + [3, 10] or [] + [\S6]
-No answers found
-Try to process [0, 3] + [4, 10] or [] + []
-No answers found
-Try to process [0, 4] + [5, 10] or [] + [\S6]
-No answers found
-Try to process [0, 5] + [6, 10] or [] + []
-No answers found
-Try to process [0, 6] + [7, 10] or [] + []
-No answers found
-Try to process [0, 7] + [8, 10] or [] + []
-No answers found
-Try to process [0, 8] + [9, 10] or [] + []
-No answers found
-Try to process [0, 9] + [10, 10] or [] + [\S3]
-No answers found
-
-Resulting table:
-   |     0     |  1  |     2     |     3     |  4  |     5     |     6     |  7  |     8     |  9  | 10 
-0  | E T F \S0 |     |           |           |     |           |           |     |           |     |    
-1  |           | \S1 |           |           |     |           |           |     |           |     |    
-2  |           |     |    \S2    |           |     |           |           |     |           |     |    
-3  |           |     |           | E T F \S0 |     |           |           |     |           |     |    
-4  |           |     |           |           | \S4 |           |           |     |           |     |    
-5  |           |     |           |           |     |    \S2    |           |     |           |     |    
-6  |           |     |           |           |     |           | E T F \S0 |     |           |     |    
-7  |           |     |           |           |     |           |           | \S1 |           |     |    
-8  |           |     |           |           |     |           |   E \S0   | \S5 | E T F \S0 |     |    
-9  |           |     |           |  E T \S0  | \S7 | E F T \S0 |    \S6    |     |    \S6    | \S3 |    
-10 |   E \S0   | \S5 | E F T \S0 |    \S6    |     |    \S6    |           |     |           |     | \S3
-
-Cell [0, 5] has nonterminal \S0
-"1-(5*(5-2))" - ACCEPTED

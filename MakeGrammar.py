@@ -34,6 +34,7 @@ def get_error_index():
 
 
 errors = {}
+index = get_index()
 index_error = get_error_index()
 
 

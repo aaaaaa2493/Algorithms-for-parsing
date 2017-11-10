@@ -14,8 +14,6 @@ def to_homsky():
     rules['\S0'] = [[S0]]
     print_rules(rules)
 
-    index = get_index()
-
     print('Move terms into separate rules')
 
     separated_terms = {}

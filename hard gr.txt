@@ -1,0 +1,10 @@
+init E
+E -> E - - T | T | **
+T -> T * * F | F | **
+F -> (E) | D
+D -> 0 | \... | 9 | 00
+A -> \eps
+C -> A A | A A A | A A A B B B | B
+B -> Q W E A | A A | Q W | B C C
+Q -> W W | \eps
+W -> \eps
