@@ -1,7 +1,7 @@
 import sys
 sys.dont_write_bytecode = True
 
-from Homsky import *
+from Chomsky import *
 
 
 def do_CYK():
